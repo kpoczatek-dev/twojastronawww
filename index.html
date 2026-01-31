@@ -11,7 +11,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@400;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- Styles -->
     <link rel="stylesheet" href="style.css">
@@ -35,12 +37,29 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h1>Profesjonalne Strony WWW <br><span>Bądź o krok przed konkurencją</span></h1>
-            <p>Tworzymy szybkie, bezpieczne serwisy zintegrowane z Git, wyposażone w dedykowany panel administracyjny i
-                system odzyskiwania utraconych klientów.</p>
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="buttons">
+                        <span class="close"></span>
+                        <span class="minimize"></span>
+                        <span class="maximize"></span>
+                    </div>
+                    <div class="title">terminal — zsh — 80x24</div>
+                </div>
+                <div class="terminal-body">
+                    <div class="command-line">
+                        <span class="prompt">➜ ~</span>
+                        <span class="typewriter" id="typewriter"></span><span class="cursor">_</span>
+                    </div>
+                </div>
+            </div>
+
+            <h1 style="margin-top: 40px;">Profesjonalne Strony WWW <br><span>Code. Optimize. Deploy.</span></h1>
+            <p>Architektura Flat-File, autorskie skrypty i wydajność, której nie da Ci żaden gotowiec.</p>
+
             <div class="hero-btns">
                 <a href="#contact" class="btn btn-primary">Darmowa Wycena</a>
-                <a href="#features" class="btn btn-secondary">Zobacz Funkcje</a>
+                <a href="#portfolio" class="btn btn-secondary">Zobacz Kod / Realizacje</a>
             </div>
         </div>
     </section>
@@ -229,6 +248,48 @@
         </div>
     </footer>
 
+    <!-- Script for Typer Effect -->
+    <script>
+        const textToType = [
+            "Tworzę strony szybkie jak błyskawica...",
+            "Piszę skrypty, które oszczędzają Twój czas...",
+            "Stosuję architekturę Flat-File zamiast ciężkich baz SQL...",
+            "Wdrażam systemy Lead Recovery..."
+        ];
+
+        const typeWriterElement = document.getElementById('typewriter');
+        let arrayIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function type() {
+            const currentString = textToType[arrayIndex];
+
+            if (isDeleting) {
+                typeWriterElement.textContent = currentString.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typeWriterElement.textContent = currentString.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            let typeSpeed = 50;
+            if (isDeleting) typeSpeed /= 2;
+
+            if (!isDeleting && charIndex === currentString.length) {
+                isDeleting = true;
+                typeSpeed = 2000; // Pause at end
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                arrayIndex = (arrayIndex + 1) % textToType.length;
+                typeSpeed = 500;
+            }
+
+            setTimeout(type, typeSpeed);
+        }
+
+        document.addEventListener('DOMContentLoaded', type);
+    </script>
 </body>
 
 </html>
