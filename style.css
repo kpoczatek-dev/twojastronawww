@@ -258,6 +258,7 @@ nav .container {
     opacity: 1 !important;
     pointer-events: auto !important;
 }
+.terminal-header {
     background: rgba(255,255,255,0.05);
     padding: 10px 15px;
     display: flex;
