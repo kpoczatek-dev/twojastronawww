@@ -242,6 +242,7 @@ nav .container {
     justify-content: flex-end; /* Text starts from top or fills up? Standard terminal fills from top, but let's keep it simple */
     align-items: flex-start;
     cursor: text; /* Indicate interactiveness */
+    position: relative; /* For click handler target */
 }
 
 #terminal-input {
@@ -251,8 +252,11 @@ nav .container {
     font-family: var(--font-mono);
     font-size: 1.1rem;
     outline: none;
-    width: 60%;
+    flex: 1; /* Take remaining space */
+    min-width: 150px;
     caret-color: #27c93f;
+    opacity: 1 !important;
+    pointer-events: auto !important;
 }
     background: rgba(255,255,255,0.05);
     padding: 10px 15px;
@@ -279,10 +283,12 @@ nav .container {
 .maximize { background: #27c93f; }*/
 
 .title {
-    margin: 0 auto;
-    color: rgba(255,255,255,0.3);
-    font-size: 0.8rem;
+    margin-left: 15px; /* Right of buttons */
+    /* margin: 0 auto; Removed centering */
+    color: rgba(255,255,255,0.4);
+    font-size: 0.85rem;
     font-family: var(--font-mono);
+    font-weight: 600;
 }
 
 .terminal-body {

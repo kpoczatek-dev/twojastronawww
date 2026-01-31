@@ -367,6 +367,11 @@
                     termInput.focus();
                     termInput.placeholder = "Wpisz coś lub 'kontakt'...";
 
+                    // Ensure click anywhere in terminal focuses input
+                    document.getElementById('term1').onclick = function () {
+                        termInput.focus();
+                    };
+
                     // Interactive listener
                     termInput.onkeydown = function (e) {
                         if (e.key === 'Enter') {
