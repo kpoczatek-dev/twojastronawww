@@ -37,44 +37,42 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <div class="terminal-scene">
-                <div class="terminal-slider" id="terminalSlider">
+            <div class="terminal-scene" id="terminalScene">
 
-                    <!-- Terminal 1: Hard Skills -->
-                    <div class="terminal-window" id="term1">
-                        <div class="terminal-header">
-                            <div class="buttons">
-                                <span></span><span></span><span></span>
-                            </div>
-                            <div class="title">terminal — tech — optimization</div>
+                <!-- Terminal 1: Hard Skills -->
+                <div class="terminal-window" id="term1">
+                    <div class="terminal-header">
+                        <div class="buttons">
+                            <span></span><span></span><span></span>
                         </div>
-                        <div class="terminal-body">
-                            <div id="history1"></div>
-                            <div class="command-line">
-                                <span class="prompt">➜ dev ~</span>
-                                <span class="typewriter" id="typewriter1"></span><span class="cursor">_</span>
-                            </div>
+                        <div class="title">terminal — tech — optimization</div>
+                    </div>
+                    <div class="terminal-body">
+                        <div id="history1"></div>
+                        <div class="command-line">
+                            <span class="prompt">➜ dev ~</span>
+                            <span class="typewriter" id="typewriter1"></span><span class="cursor">_</span>
                         </div>
                     </div>
-
-                    <!-- Terminal 2: Soft Skills -->
-                    <div class="terminal-window" id="term2">
-                        <div class="terminal-header">
-                            <div class="buttons">
-                                <span></span><span></span><span></span>
-                            </div>
-                            <div class="title">terminal — sales — relations</div>
-                        </div>
-                        <div class="terminal-body">
-                            <div id="history2"></div>
-                            <div class="command-line">
-                                <span class="prompt">➜ boss ~</span>
-                                <span class="typewriter" id="typewriter2"></span><span class="cursor">_</span>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
+
+                <!-- Terminal 2: Soft Skills -->
+                <div class="terminal-window collapsed" id="term2">
+                    <div class="terminal-header">
+                        <div class="buttons">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <div class="title">terminal — sales — relations</div>
+                    </div>
+                    <div class="terminal-body">
+                        <div id="history2"></div>
+                        <div class="command-line">
+                            <span class="prompt">➜ boss ~</span>
+                            <span class="typewriter" id="typewriter2"></span><span class="cursor">_</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <h1 style="margin-top: 40px;">Profesjonalne Strony WWW <br><span>Code. Optimize. Deploy.</span></h1>
@@ -200,7 +198,7 @@
                 <div class="feature-card">
                     <div class="icon">📱</div>
                     <h3>Mobile First & UX</h3>
-                    <p>Projektuję z myślą o użytkowniku. Intuicyjna nawigacja i perfekcyjne działanie na telefonach to u
+                    <p>Projektuję z myślą o użytkowniku. Intuitywna nawigacja i perfekcyjne działanie na telefonach to u
                         mnie standard, nie dodatek.</p>
                 </div>
                 <div class="feature-card">
@@ -292,46 +290,41 @@
             "Zrozumienie Twojego biznesu ..."
         ];
 
-        const slider = document.getElementById('terminalSlider');
-        let currentTerm = 1;
+        const scene = document.getElementById('terminalScene');
+        const term2 = document.getElementById('term2');
 
         async function runTerminal(termId, textArray, nextCallback) {
             const historyEl = document.getElementById(`history${termId}`);
             const typerEl = document.getElementById(`typewriter${termId}`);
             const promptStr = termId === 1 ? '➜ dev ~' : '➜ boss ~';
-            const colorDone = termId === 1 ? '#27c93f' : '#3b82f6'; // Green for Dev, Blue for Boss
+            const colorDone = termId === 1 ? '#27c93f' : '#3b82f6';
 
-            // Clear previous run if needed
             historyEl.innerHTML = '';
+            typerEl.textContent = ''; // Clear potentially typed text
 
             for (let i = 0; i < textArray.length; i++) {
                 const text = textArray[i];
 
-                // Type line
                 for (let j = 0; j <= text.length; j++) {
                     typerEl.textContent = text.substring(0, j);
                     await new Promise(r => setTimeout(r, 20 + Math.random() * 30));
                 }
 
-                // Finish line
-                await new Promise(r => setTimeout(r, 600)); // Pause at end of line
+                await new Promise(r => setTimeout(r, 600));
 
-                // Add to history
                 const line = document.createElement('div');
                 line.className = 'history-line';
                 line.innerHTML = `<span class="prompt">${promptStr}</span> <span style="color: #fff">${text}</span> <span style="color: ${colorDone}">✓</span>`;
                 historyEl.appendChild(line);
 
-                // Fade/Limit history
                 const lines = historyEl.children;
                 if (lines.length > 5) {
-                    historyEl.removeChild(lines[0]); // Remove oldest
+                    historyEl.removeChild(lines[0]);
                 }
 
-                // Apply fading classes (newest is last)
                 for (let k = 0; k < lines.length; k++) {
-                    const reverseIndex = lines.length - 1 - k; // 0 for newest
-                    lines[k].className = 'history-line'; // reset
+                    const reverseIndex = lines.length - 1 - k;
+                    lines[k].className = 'history-line';
                     if (reverseIndex === 1) lines[k].classList.add('fade-1');
                     if (reverseIndex === 2) lines[k].classList.add('fade-2');
                     if (reverseIndex >= 3) lines[k].classList.add('fade-3');
@@ -339,31 +332,35 @@
 
                 typerEl.textContent = '';
 
-                // Trigger Slide Condition (e.g. after 5 lines) but continue to finish array? 
-                // User said "jak tak juz przy 6 niech terminal idzie w lewo"
-                if (i === 5) {
-                    await new Promise(r => setTimeout(r, 1000));
+                // Trigger Slide Condition after 6th line (index 5)
+                if (termId === 1 && i === 5 && nextCallback) {
+                    await new Promise(r => setTimeout(r, 500));
                     nextCallback();
-                    return; // Stop this terminal
+                    return; // Stop this terminal from typing further
                 }
             }
         }
 
         async function startSequence() {
-            // Reset
-            slider.style.transform = 'translateX(0)';
+            // Reset state
+            scene.classList.remove('dual-mode');
+            term2.classList.add('collapsed');
 
             // Run Terminal 1
             runTerminal(1, techSkills, async () => {
-                // Slide to Terminal 2
-                slider.style.transform = 'translateX(-50%)';
+                // Transition to Dual Mode
+                scene.classList.add('dual-mode');
+                term2.classList.remove('collapsed');
 
-                await new Promise(r => setTimeout(r, 1500)); // Wait for slide
+                await new Promise(r => setTimeout(r, 1200)); // Wait for expansion
 
                 // Run Terminal 2
                 runTerminal(2, softSkills, async () => {
-                    // Loop back
-                    await new Promise(r => setTimeout(r, 2000));
+                    // Done?
+                    // User implied a loop? "niech sie zapetla"
+                    // Maybe separate loops? 
+                    // Let's restart whole sequence after a long pause
+                    await new Promise(r => setTimeout(r, 5000));
                     startSequence();
                 });
             });

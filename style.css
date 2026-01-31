@@ -155,32 +155,64 @@ nav .container {
 /* Terminal Window Container for Sliding */
 .terminal-scene {
     width: 100%;
-    max-width: 800px;
+    max-width: 1100px; /* Wider to fit two */
     margin: 0 auto 40px;
-    overflow: hidden; /* Hide the second terminal initially */
+    display: flex;
+    justify-content: center;
+    gap: 20px;
     position: relative;
-    border-radius: 10px;
+    /* overflow: hidden; Removed to allow popping if needed, but safe to keep off */
 }
 
-.terminal-slider {
-    display: flex;
-    width: 200%; /* Two terminals wide */
-    transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* Removed terminal-slider, using direct flex manipulation */
 
 .terminal-window {
     background: #0f172a;
     border-radius: 10px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     border: 1px solid rgba(255,255,255,0.1);
-    width: 50%; /* Each takes half of the slider (which is 200% wide) */
-    margin: 0; /* Margins handled by padding or gap if needed, but here simple flush */
-    flex-shrink: 0;
-    font-family: var(--font-mono);
-    text-align: left;
-    height: 320px; /* Fixed height for consistency */
+    
+    /* Animation props */
+    width: 100%;
+    max-width: 800px; /* Initial single width */
+    height: 340px;
+    flex-shrink: 1;
+    transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    
     display: flex;
     flex-direction: column;
+    font-family: var(--font-mono);
+    text-align: left;
+    overflow: hidden;
+}
+
+/* State: When the second terminal is hidden */
+.terminal-window.collapsed {
+    width: 0;
+    max-width: 0;
+    padding: 0;
+    border-width: 0;
+    opacity: 0;
+    margin: 0;
+    transform: translateX(50px);
+}
+
+/* State: When both are visible */
+.terminal-scene.dual-mode .terminal-window {
+    max-width: 48%; /* Side by side */
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .terminal-scene {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .terminal-scene.dual-mode .terminal-window {
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
 }
 
 /* Fading lines */
