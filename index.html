@@ -37,21 +37,43 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <div class="terminal-window">
-                <div class="terminal-header">
-                    <div class="buttons">
-                        <span class="close"></span>
-                        <span class="minimize"></span>
-                        <span class="maximize"></span>
+            <div class="terminal-scene">
+                <div class="terminal-slider" id="terminalSlider">
+
+                    <!-- Terminal 1: Hard Skills -->
+                    <div class="terminal-window" id="term1">
+                        <div class="terminal-header">
+                            <div class="buttons">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="title">terminal — tech — optimization</div>
+                        </div>
+                        <div class="terminal-body">
+                            <div id="history1"></div>
+                            <div class="command-line">
+                                <span class="prompt">➜ dev ~</span>
+                                <span class="typewriter" id="typewriter1"></span><span class="cursor">_</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="title">terminal — zsh — 80x24</div>
-                </div>
-                <div class="terminal-body">
-                    <div id="terminal-history"></div>
-                    <div class="command-line">
-                        <span class="prompt">➜ ~</span>
-                        <span class="typewriter" id="typewriter"></span><span class="cursor">_</span>
+
+                    <!-- Terminal 2: Soft Skills -->
+                    <div class="terminal-window" id="term2">
+                        <div class="terminal-header">
+                            <div class="buttons">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="title">terminal — sales — relations</div>
+                        </div>
+                        <div class="terminal-body">
+                            <div id="history2"></div>
+                            <div class="command-line">
+                                <span class="prompt">➜ boss ~</span>
+                                <span class="typewriter" id="typewriter2"></span><span class="cursor">_</span>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
@@ -251,56 +273,103 @@
 
     <!-- Script for Typer Effect -->
     <script>
-        const textToType = [
+        const techSkills = [
             "Optymalizacja pod Google (SEO) ...",
             "Błyskawiczne czasy ładowania ...",
             "Pełna responsywność RWD ...",
             "Bezpieczeństwo danych i kopie zapasowe ...",
             "Indywidualny projekt graficzny ...",
+            "Czysty kod PHP & Flat-File ...",
+            "Automatyzacja procesów ..."
         ];
 
-        const historyElement = document.getElementById('terminal-history');
-        const typeWriterElement = document.getElementById('typewriter');
-        let arrayIndex = 0;
-        let charIndex = 0;
+        const softSkills = [
+            "Darmowa wycena projektu ...",
+            "Wsparcie posprzedażowe ...",
+            "Jasna komunikacja i relacje ...",
+            "Terminowość realizacji ...",
+            "Indywidualne konsultacje ...",
+            "Zrozumienie Twojego biznesu ..."
+        ];
 
-        function type() {
-            const currentString = textToType[arrayIndex];
+        const slider = document.getElementById('terminalSlider');
+        let currentTerm = 1;
 
-            // Typing effect
-            typeWriterElement.textContent = currentString.substring(0, charIndex + 1);
-            charIndex++;
+        async function runTerminal(termId, textArray, nextCallback) {
+            const historyEl = document.getElementById(`history${termId}`);
+            const typerEl = document.getElementById(`typewriter${termId}`);
+            const promptStr = termId === 1 ? '➜ dev ~' : '➜ boss ~';
+            const colorDone = termId === 1 ? '#27c93f' : '#3b82f6'; // Green for Dev, Blue for Boss
 
-            if (charIndex <= currentString.length) {
-                // Continue typing
-                setTimeout(type, 30 + Math.random() * 40); // Faster typing
-            } else {
-                // Line finished
-                setTimeout(() => {
-                    // Add to history
-                    const line = document.createElement('div');
-                    line.className = 'history-line';
-                    line.innerHTML = `<span class="prompt">➜ ~</span> <span style="color: #fff">${currentString}</span> <span style="color: #27c93f">✓ Done</span>`;
-                    historyElement.appendChild(line);
+            // Clear previous run if needed
+            historyEl.innerHTML = '';
 
-                    // Clear typer
-                    typeWriterElement.textContent = '';
-                    charIndex = 0;
+            for (let i = 0; i < textArray.length; i++) {
+                const text = textArray[i];
 
-                    // Next string
-                    arrayIndex = (arrayIndex + 1) % textToType.length;
+                // Type line
+                for (let j = 0; j <= text.length; j++) {
+                    typerEl.textContent = text.substring(0, j);
+                    await new Promise(r => setTimeout(r, 20 + Math.random() * 30));
+                }
 
-                    // Smooth scroll/limit history
-                    if (historyElement.children.length > 3) {
-                        historyElement.removeChild(historyElement.firstChild);
-                    }
+                // Finish line
+                await new Promise(r => setTimeout(r, 600)); // Pause at end of line
 
-                    setTimeout(type, 500);
-                }, 800); // Pause before new line
+                // Add to history
+                const line = document.createElement('div');
+                line.className = 'history-line';
+                line.innerHTML = `<span class="prompt">${promptStr}</span> <span style="color: #fff">${text}</span> <span style="color: ${colorDone}">✓</span>`;
+                historyEl.appendChild(line);
+
+                // Fade/Limit history
+                const lines = historyEl.children;
+                if (lines.length > 5) {
+                    historyEl.removeChild(lines[0]); // Remove oldest
+                }
+
+                // Apply fading classes (newest is last)
+                for (let k = 0; k < lines.length; k++) {
+                    const reverseIndex = lines.length - 1 - k; // 0 for newest
+                    lines[k].className = 'history-line'; // reset
+                    if (reverseIndex === 1) lines[k].classList.add('fade-1');
+                    if (reverseIndex === 2) lines[k].classList.add('fade-2');
+                    if (reverseIndex >= 3) lines[k].classList.add('fade-3');
+                }
+
+                typerEl.textContent = '';
+
+                // Trigger Slide Condition (e.g. after 5 lines) but continue to finish array? 
+                // User said "jak tak juz przy 6 niech terminal idzie w lewo"
+                if (i === 5) {
+                    await new Promise(r => setTimeout(r, 1000));
+                    nextCallback();
+                    return; // Stop this terminal
+                }
             }
         }
 
-        document.addEventListener('DOMContentLoaded', type);
+        async function startSequence() {
+            // Reset
+            slider.style.transform = 'translateX(0)';
+
+            // Run Terminal 1
+            runTerminal(1, techSkills, async () => {
+                // Slide to Terminal 2
+                slider.style.transform = 'translateX(-50%)';
+
+                await new Promise(r => setTimeout(r, 1500)); // Wait for slide
+
+                // Run Terminal 2
+                runTerminal(2, softSkills, async () => {
+                    // Loop back
+                    await new Promise(r => setTimeout(r, 2000));
+                    startSequence();
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', startSequence);
     </script>
 </body>
 
