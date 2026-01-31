@@ -51,7 +51,9 @@
                         <div id="history1"></div>
                         <div class="command-line">
                             <span class="prompt">➜ dev ~</span>
-                            <span class="typewriter" id="typewriter1"></span><span class="cursor">_</span>
+                            <span class="typewriter" id="typewriter1"></span>
+                            <input type="text" id="terminal-input" autocomplete="off" style="display: none;">
+                            <span class="cursor" id="cursor1">_</span>
                         </div>
                     </div>
                 </div>
@@ -292,6 +294,8 @@
 
         const scene = document.getElementById('terminalScene');
         const term2 = document.getElementById('term2');
+        const termInput = document.getElementById('terminal-input');
+        const cursor1 = document.getElementById('cursor1');
 
         async function runTerminal(termId, textArray, nextCallback) {
             const historyEl = document.getElementById(`history${termId}`);
@@ -300,7 +304,7 @@
             const colorDone = termId === 1 ? '#27c93f' : '#3b82f6';
 
             historyEl.innerHTML = '';
-            typerEl.textContent = ''; // Clear potentially typed text
+            typerEl.textContent = '';
 
             for (let i = 0; i < textArray.length; i++) {
                 const text = textArray[i];
@@ -323,6 +327,7 @@
                 }
 
                 for (let k = 0; k < lines.length; k++) {
+                    // ... class logic ...
                     const reverseIndex = lines.length - 1 - k;
                     lines[k].className = 'history-line';
                     if (reverseIndex === 1) lines[k].classList.add('fade-1');
@@ -332,36 +337,64 @@
 
                 typerEl.textContent = '';
 
-                // Trigger Slide Condition after 6th line (index 5)
                 if (termId === 1 && i === 5 && nextCallback) {
                     await new Promise(r => setTimeout(r, 500));
                     nextCallback();
-                    return; // Stop this terminal from typing further
+                    return;
                 }
             }
         }
 
         async function startSequence() {
-            // Reset state
             scene.classList.remove('dual-mode');
             term2.classList.add('collapsed');
+            termInput.style.display = 'none';
+            cursor1.style.display = 'inline';
 
-            // Run Terminal 1
             runTerminal(1, techSkills, async () => {
-                // Transition to Dual Mode
                 scene.classList.add('dual-mode');
                 term2.classList.remove('collapsed');
 
-                await new Promise(r => setTimeout(r, 1200)); // Wait for expansion
+                await new Promise(r => setTimeout(r, 1200));
 
-                // Run Terminal 2
                 runTerminal(2, softSkills, async () => {
-                    // Done?
-                    // User implied a loop? "niech sie zapetla"
-                    // Maybe separate loops? 
-                    // Let's restart whole sequence after a long pause
-                    await new Promise(r => setTimeout(r, 5000));
-                    startSequence();
+                    // Enable interaction instead of looping immediately
+                    const typer1 = document.getElementById('typewriter1');
+                    typer1.textContent = ''; // clear
+                    cursor1.style.display = 'none'; // hide static cursor
+
+                    termInput.style.display = 'inline-block';
+                    termInput.focus();
+                    termInput.placeholder = "Wpisz coś lub 'kontakt'...";
+
+                    // Interactive listener
+                    termInput.onkeydown = function (e) {
+                        if (e.key === 'Enter') {
+                            const val = this.value;
+                            // Add user command to history
+                            const historyEl = document.getElementById(`history1`);
+                            const line = document.createElement('div');
+                            line.className = 'history-line';
+                            line.innerHTML = `<span class="prompt">➜ dev ~</span> <span style="color: #fff">${val}</span>`;
+                            historyEl.appendChild(line);
+
+                            this.value = '';
+
+                            // Simple response
+                            setTimeout(() => {
+                                const resp = document.createElement('div');
+                                resp.className = 'history-line';
+                                if (val.toLowerCase().includes('kontakt')) {
+                                    resp.innerHTML = `<span style="color: #27c93f">Przekierowanie do formularza...</span>`;
+                                    document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+                                } else {
+                                    resp.innerHTML = `<span style="color: #3b82f6">Dzięki za wiadomość! :) Użyj komendy 'kontakt'.</span>`;
+                                }
+                                historyEl.appendChild(resp);
+                                historyEl.scrollTop = historyEl.scrollHeight;
+                            }, 300);
+                        }
+                    };
                 });
             });
         }

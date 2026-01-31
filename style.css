@@ -175,26 +175,28 @@ nav .container {
     /* Animation props */
     width: 100%;
     max-width: 800px; /* Initial single width */
+    min-width: 300px; /* Prevent total collapse squashing content */
     height: 340px;
     flex-shrink: 1;
-    transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: max-width 1.2s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s;
     
     display: flex;
     flex-direction: column;
     font-family: var(--font-mono);
     text-align: left;
     overflow: hidden;
+    position: relative; /* For absolute input */
 }
 
 /* State: When the second terminal is hidden */
 .terminal-window.collapsed {
-    width: 0;
     max-width: 0;
+    min-width: 0;
     padding: 0;
     border-width: 0;
     opacity: 0;
     margin: 0;
-    transform: translateX(50px);
+    transform: translateX(20px);
 }
 
 /* State: When both are visible */
@@ -219,13 +221,39 @@ nav .container {
 .history-line {
     margin-bottom: 5px;
     transition: opacity 0.5s;
+    white-space: nowrap; /* Prevent text wrapping during resize */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .history-line.fade-1 { opacity: 0.8; }
 .history-line.fade-2 { opacity: 0.5; }
 .history-line.fade-3 { opacity: 0.2; }
 
-.terminal-header {
+/* ... header styles ... */
+
+.terminal-body {
+    padding: 20px;
+    min-height: 200px; /* Slightly taller for history */
+    color: #33ff00; /* Hacker Green */
+    font-size: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Text starts from top or fills up? Standard terminal fills from top, but let's keep it simple */
+    align-items: flex-start;
+    cursor: text; /* Indicate interactiveness */
+}
+
+#terminal-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    outline: none;
+    width: 60%;
+    caret-color: #27c93f;
+}
     background: rgba(255,255,255,0.05);
     padding: 10px 15px;
     display: flex;
