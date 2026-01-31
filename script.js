@@ -51,7 +51,7 @@ async function runTerminal(termId, textArray, nextCallback) {
         }
 
         // Wait before finishing line
-        await new Promise(r => setTimeout(r, 600));
+        await new Promise(r => setTimeout(r, 50));
 
         // Move to history
         const line = document.createElement('div');
@@ -93,82 +93,102 @@ async function runTerminal(termId, textArray, nextCallback) {
 
 async function startSequence() {
     scene.classList.remove('dual-mode');
-    term2.classList.add('collapsed');
+    // term2.collapsed not needed with grid 0fr
     termInput.style.display = 'none';
     cursor1.style.display = 'inline';
 
     runTerminal(1, techSkills, async () => {
         scene.classList.add('dual-mode');
-        term2.classList.remove('collapsed');
+        // term2.collapsed remove not needed
 
         await new Promise(r => setTimeout(r, 1200));
 
         runTerminal(2, softSkills, async () => {
-            // Enable interaction
-            const typer1 = document.getElementById('typewriter1');
-            typer1.textContent = ''; 
-            cursor1.style.display = 'none'; 
-
-            termInput.style.display = 'inline-block';
-            
-            // Add prompt method
-            const history1 = document.getElementById('history1');
-            const promptLine = document.createElement('div');
-            promptLine.className = 'history-line';
-            promptLine.innerHTML = `<br><span style="color: #06b6d4">➜ System:</span> <span style="color: #fff">Wpisz komendę </span><span style="color: #27c93f">'kontakt'</span><span style="color: #fff"> aby rozpocząć...</span>`;
-            history1.appendChild(promptLine);
-            scrollToBottom(history1);
-
-            termInput.focus();
-            termInput.placeholder = "Wpisz 'kontakt'...";
-
-            // Click listener
-            document.getElementById('term1').onclick = function () {
-                termInput.focus();
-            };
-
-            // Input handler
-            termInput.onkeydown = function (e) {
-                if (e.key === 'Enter') {
-                    const val = this.value.trim();
-                    if (!val) return;
-
-                    // Add user command to history
-                    const line = document.createElement('div');
-                    line.className = 'history-line';
-                    line.innerHTML = `<span class="prompt">➜ dev ~</span> <span style="color: #fff">${val}</span>`;
-                    history1.appendChild(line);
-                    scrollToBottom(history1);
-
-                    this.value = '';
-
-                    // Response logic
-                    setTimeout(() => {
-                        const resp = document.createElement('div');
-                        resp.className = 'history-line';
-                        
-                        if (val.toLowerCase().includes('kontakt')) {
-                            resp.innerHTML = `
-                                <div style="color: #27c93f; margin-bottom: 5px;">Dane kontaktowe:</div>
-                                <div>Email: <a href="mailto:kontakt@twojastronawww.pl" style="color: #fff; text-decoration: underline;">kontakt@twojastronawww.pl</a></div>
-                                <div>Tel: <span style="color: #fff">+48 123 456 789</span></div>
-                                <div style="color: #94a3b8; font-size: 0.9em; margin-top: 5px;">(Formularz znajdziesz na dole strony)</div>
-                            `;
-                        } else if (val.toLowerCase() === 'help' || val.toLowerCase() === 'pomoc') {
-                            resp.innerHTML = `<span style="color: #3b82f6">Dostępne komendy: kontakt, help, clear</span>`;
-                            history1.appendChild(resp);
-                        } else if (val.toLowerCase() === 'clear') {
-                            history1.innerHTML = '';
-                        } else {
-                            resp.innerHTML = `<span style="color: #ef4444">Komenda nieznana. Wpisz 'help' lub 'kontakt'.</span>`;
-                            history1.appendChild(resp);
-                        }
-                        scrollToBottom(history1);
-                    }, 200);
-                }
-            };
+            // Enable interaction for both terminals
+            enableTerminalInteraction(1);
+            enableTerminalInteraction(2);
         });
     });
+}
+
+function enableTerminalInteraction(termId) {
+    const typer = document.getElementById(`typewriter${termId}`);
+    const cursor = document.getElementById(`cursor${termId}`);
+    const input = document.getElementById(termId === 1 ? 'terminal-input' : 'terminal-input-2');
+    const history = document.getElementById(`history${termId}`);
+    const terminalWindow = document.getElementById(`term${termId}`);
+    const promptStr = termId === 1 ? '➜ dev ~' : '➜ boss ~';
+
+    // Clear typing artifacts
+    typer.textContent = ''; 
+    cursor.style.display = 'none'; 
+
+    // Show input
+    input.style.display = 'inline-block';
+    
+    // Initial focus on term1, but allow clicking both
+    if (termId === 1) {
+        input.focus();
+        input.placeholder = "Wpisz 'kontakt'...";
+    } else {
+        input.placeholder = "Wpisz polecenie...";
+    }
+
+    // Click listener
+    terminalWindow.onclick = function () {
+        input.focus();
+    };
+
+    // Input handler
+    input.onkeydown = function (e) {
+        if (e.key === 'Enter') {
+            const val = this.value.trim();
+            if (!val) return;
+
+            // Add user command to history
+            const line = document.createElement('div');
+            line.className = 'history-line';
+            line.innerHTML = `<span class="prompt">${promptStr}</span> <span style="color: #fff">${val}</span>`;
+            history.appendChild(line);
+            scrollToBottom(history);
+
+            this.value = '';
+
+            // Response logic
+            setTimeout(() => {
+                const resp = document.createElement('div');
+                resp.className = 'history-line';
+                
+                if (val.toLowerCase().includes('kontakt')) {
+                    resp.innerHTML = `
+                        <div style="color: #27c93f; margin-bottom: 5px;">Dane kontaktowe:</div>
+                        <div>Email: <a href="mailto:kontakt@twojastronawww.pl" style="color: #fff; text-decoration: underline;">kontakt@twojastronawww.pl</a></div>
+                        <div>Tel: <span style="color: #fff">+48 123 456 789</span></div>
+                    `;
+                    // Only scroll if it was requested from term1 specifically? Or just show info.
+                    // Let's scroll if term1 for now as it's the main CTA
+                    if (termId === 1) {
+                         // Optional: Scroll logic removed as per previous request to keep it in terminal
+                    }
+                } else if (val.toLowerCase() === 'help' || val.toLowerCase() === 'pomoc') {
+                    resp.innerHTML = `<span style="color: #3b82f6">Dostępne: kontakt, help, clear</span>`;
+                    history.appendChild(resp);
+                } else if (val.toLowerCase() === 'clear') {
+                    history.innerHTML = '';
+                    scrollToBottom(history); // Ensure cleared view is correct
+                    return; // Return early so we don't append resp
+                } else {
+                    resp.innerHTML = `<span style="color: #ef4444">Nieznana komenda.</span>`;
+                    history.appendChild(resp);
+                }
+                
+                if (resp.innerHTML) { // Double check we have content
+                     // history.appendChild(resp); // Already appended above
+                }
+                scrollToBottom(history);
+            }, 50);
+        }
+    };
 }
 
 document.addEventListener('DOMContentLoaded', startSequence);

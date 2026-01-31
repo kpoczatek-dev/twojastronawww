@@ -16,7 +16,7 @@
         rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 
 <body>
@@ -70,7 +70,9 @@
                         <div id="history2"></div>
                         <div class="command-line">
                             <span class="prompt">➜ boss ~</span>
-                            <span class="typewriter" id="typewriter2"></span><span class="cursor">_</span>
+                            <span class="typewriter" id="typewriter2"></span>
+                            <input type="text" id="terminal-input-2" autocomplete="off" style="display: none;">
+                            <span class="cursor" id="cursor2">_</span>
                         </div>
                     </div>
                 </div>
@@ -140,12 +142,13 @@
     <!-- Portfolio Section -->
     <section id="portfolio" class="features" style="background-color: rgba(0,0,0,0.2);">
         <div class="container">
-            <h2 class="section-title">Moje Realizacje</h2>
+            <h2 class="section-title">Lokalne Realizacje</h2>
             <div class="features-grid">
 
                 <!-- Project 1: Raricart -->
                 <div class="feature-card">
                     <div class="icon">🛍️</div>
+                    <span class="location-tag">Zabrze</span>
                     <h3>Raricart.pl (E-commerce)</h3>
                     <p>Zaawansowana platforma sprzedażowa. Pełna obsługa koszyka, procesów zakupowych oraz przejrzysta
                         prezentacja produktów. Sklep nastawiony na konwersję.</p>
@@ -156,6 +159,7 @@
                 <!-- Project 2: KatoSalsaHub -->
                 <div class="feature-card">
                     <div class="icon">💃</div>
+                    <span class="location-tag">Katowice</span>
                     <h3>KatoSalsaHub</h3>
                     <p>Centrum informacyjne dla społeczności tanecznej. Spójny branding, czytelne grafiki zajęć i
                         energetyczny design oddający charakter marki.</p>
@@ -166,11 +170,61 @@
                 <!-- Project 3: DancePuls -->
                 <div class="feature-card">
                     <div class="icon">🔥</div>
+                    <span class="location-tag">Katowice</span>
                     <h3>DancePuls</h3>
                     <p>Strona wizerunkowa szkoły tańca. Responsywny projekt "Mobile First", który ułatwia użytkownikom
                         szybki dostęp do cennika i lokalizacji.</p>
                     <a href="https://dancepuls.katosalsahub.pl/" target="_blank" class="btn btn-secondary"
                         style="margin-top: 20px; font-size: 0.8rem; padding: 8px 16px;">Zobacz Live</a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="features">
+        <div class="container">
+            <h2 class="section-title">Pakiety & Wycena</h2>
+            <div class="pricing-grid">
+
+                <div class="pricing-card">
+                    <h3>Wizytówka / Landing</h3>
+                    <div class="price">2499 <span>PLN</span></div>
+                    <ul class="pricing-features">
+                        <li>Indywidualny Projekt Graficzny</li>
+                        <li>Responsywność (RWD)</li>
+                        <li>Podstawowe SEO</li>
+                        <li>Formularz Kontaktowy</li>
+                        <li>Hosting + Domena (1 rok)</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-secondary">Wybieram</a>
+                </div>
+
+                <div class="pricing-card featured">
+                    <h3>Strona Firmowa</h3>
+                    <div class="price">5500 <span>PLN</span></div>
+                    <ul class="pricing-features">
+                        <li>Do 10 Podstron</li>
+                        <li>System CMS (Flat-File)</li>
+                        <li>Blog / Aktualności</li>
+                        <li>Integracja Google Maps & Social</li>
+                        <li>Optymalizacja Szybkości</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary">Najpopularniejszy</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>E-commerce / App</h3>
+                    <div class="price">Indywidualna</div>
+                    <ul class="pricing-features">
+                        <li>Sklep Internetowy</li>
+                        <li>Płatności Online</li>
+                        <li>Dedykowane Funkcje</li>
+                        <li>Panel Klienta</li>
+                        <li>Wsparcie Techniczne</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-secondary">Zapytaj o wycenę</a>
                 </div>
 
             </div>

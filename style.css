@@ -153,15 +153,21 @@ nav .container {
 }
 
 /* Terminal Window Container for Sliding */
+/* Terminal Window Container for Sliding */
 .terminal-scene {
     width: 100%;
-    max-width: 1100px; /* Wider to fit two */
+    max-width: 1100px;
     margin: 0 auto 40px;
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr 0fr; /* Start with second terminal collapsed */
+    gap: 0;
+    transition: grid-template-columns 1s cubic-bezier(0.25, 1, 0.5, 1), gap 1s ease;
+}
+
+/* State: When both are visible */
+.terminal-scene.dual-mode {
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
-    position: relative;
-    /* overflow: hidden; Removed to allow popping if needed, but safe to keep off */
 }
 
 /* Removed terminal-slider, using direct flex manipulation */
@@ -174,13 +180,8 @@ nav .container {
     
     /* Animation props */
     width: 100%;
-    /* Animation props */
-    width: 100%;
-    max-width: 900px; /* Slight Increase */
-    min-width: 400px; /* Prevent total collapse squashing content */
-    height: 380px; /* Slightly taller */
-    flex-shrink: 1;
-    transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); /* Simplify transition */
+    min-width: 0; /* Allow shrinking in grid */
+    height: 380px; 
     
     display: flex;
     flex-direction: column;
@@ -190,33 +191,34 @@ nav .container {
     position: relative; 
 }
 
-/* State: When the second terminal is hidden */
-.terminal-window.collapsed {
-    max-width: 0;
-    min-width: 0;
-    padding: 0;
-    border-width: 0;
-    opacity: 0;
-    margin: 0;
-    flex-basis: 0; /* Important for flex smooth resizing */
-    overflow: hidden;
-}
+/* State: When the second terminal is hidden - REMOVED, handled by grid 0fr */
+/* .terminal-window.collapsed { ... } */
 
-/* State: When both are visible */
-.terminal-scene.dual-mode .terminal-window {
-    max-width: 50%; /* Fill space evenly */
-}
+/* State: When both are visible - REMOVED, handled by grid */
+/* .terminal-scene.dual-mode .terminal-window { ... } */
 
 /* Mobile responsive */
 @media (max-width: 768px) {
     .terminal-scene {
+        display: flex;
         flex-direction: column;
         align-items: center;
+        gap: 20px;
     }
     
-    .terminal-scene.dual-mode .terminal-window {
+    .terminal-scene.dual-mode {
+        display: flex; /* Override grid on mobile */
+    }
+
+    .terminal-window {
         max-width: 100%;
         margin-bottom: 20px;
+    }
+
+
+    /* Hide second terminal initially on mobile */
+    .terminal-scene:not(.dual-mode) #term2 {
+        display: none;
     }
 }
 
@@ -224,42 +226,126 @@ nav .container {
 .history-line {
     margin-bottom: 5px;
     transition: opacity 0.5s;
-    white-space: nowrap; /* Prevent text wrapping during resize */
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: pre-wrap; /* Allow wrapping instead of horizontal scroll */
+    word-break: break-word; /* Fix: changed from break-work to break-word */
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
-
-.history-line.fade-1 { opacity: 0.8; }
-.history-line.fade-2 { opacity: 0.5; }
-.history-line.fade-3 { opacity: 0.2; }
 
 /* ... header styles ... */
 
 .terminal-body {
     padding: 20px;
-    min-height: 200px; /* Slightly taller for history */
-    color: #33ff00; /* Hacker Green */
+    min-height: 200px;
+    color: #33ff00;
     font-size: 1.1rem;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* Text starts from top or fills up? Standard terminal fills from top, but let's keep it simple */
+    justify-content: flex-end;
     align-items: flex-start;
-    cursor: text; /* Indicate interactiveness */
-    position: relative; /* For click handler target */
+    cursor: text;
+    position: relative;
 }
 
-#terminal-input {
-    background: transparent;
+/* Shared Terminal Input */
+.terminal-input {
+    background: transparent !important; /* Force transparency */
+    background-color: transparent !important;
     border: none;
     color: #fff;
     font-family: var(--font-mono);
     font-size: 1.1rem;
     outline: none;
-    flex: 1; /* Take remaining space */
+    flex: 1;
     min-width: 150px;
     caret-color: #27c93f;
     opacity: 1 !important;
     pointer-events: auto !important;
+}
+
+/* Location Tags */
+.location-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    background: rgba(6, 182, 212, 0.1);
+    color: var(--accent-color);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    font-family: var(--font-mono);
+}
+
+/* Pricing Section */
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    margin-top: 40px;
+}
+
+.pricing-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 40px 32px;
+    border-radius: 24px;
+    text-align: center;
+    transition: transform 0.3s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+}
+
+.pricing-card.featured {
+    border-color: var(--primary-color);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.pricing-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.price {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 20px 0;
+    background: linear-gradient(to right, #fff, var(--primary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.price span {
+    font-size: 1rem;
+    color: var(--text-muted);
+    -webkit-text-fill-color: var(--text-muted);
+}
+
+.pricing-features {
+    text-align: left;
+    margin: 20px 0 40px;
+    flex-grow: 1;
+}
+
+.pricing-features li {
+    margin-bottom: 10px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+}
+
+.pricing-features li::before {
+    content: '✓';
+    color: var(--primary-color);
+    margin-right: 10px;
+    font-weight: bold;
 }
 .terminal-header {
     background: rgba(255,255,255,0.05);
