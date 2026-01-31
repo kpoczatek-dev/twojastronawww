@@ -252,10 +252,11 @@
     <!-- Script for Typer Effect -->
     <script>
         const textToType = [
-            "./generuj_strone.sh --fast",
-            "git push production main",
-            "echo 'Lead Recovery Active'",
-            "cat flat-file-db.csv",
+            "Optymalizacja pod Google (SEO) ...",
+            "Błyskawiczne czasy ładowania ...",
+            "Pełna responsywność RWD ...",
+            "Bezpieczeństwo danych i kopie zapasowe ...",
+            "Indywidualny projekt graficzny ...",
         ];
 
         const historyElement = document.getElementById('terminal-history');
@@ -272,14 +273,14 @@
 
             if (charIndex <= currentString.length) {
                 // Continue typing
-                setTimeout(type, 50 + Math.random() * 50); // Random typing speed
+                setTimeout(type, 30 + Math.random() * 40); // Faster typing
             } else {
                 // Line finished
                 setTimeout(() => {
                     // Add to history
                     const line = document.createElement('div');
                     line.className = 'history-line';
-                    line.innerHTML = `<span class="prompt">➜ ~</span> ${currentString}`;
+                    line.innerHTML = `<span class="prompt">➜ ~</span> <span style="color: #fff">${currentString}</span> <span style="color: #27c93f">✓ Done</span>`;
                     historyElement.appendChild(line);
 
                     // Clear typer
@@ -289,14 +290,13 @@
                     // Next string
                     arrayIndex = (arrayIndex + 1) % textToType.length;
 
-                    // Convert displayed commands slightly to make sense in loop or just stop?
-                    // Let's loop but maybe clear history if it gets too long?
-                    if (historyElement.children.length > 5) {
-                        historyElement.innerHTML = '';
+                    // Smooth scroll/limit history
+                    if (historyElement.children.length > 3) {
+                        historyElement.removeChild(historyElement.firstChild);
                     }
 
                     setTimeout(type, 500);
-                }, 1000); // Pause before new line
+                }, 800); // Pause before new line
             }
         }
 
