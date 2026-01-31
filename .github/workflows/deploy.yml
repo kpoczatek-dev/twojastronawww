@@ -21,7 +21,7 @@ jobs:
           port: ${{ secrets.FTP_PORT }}
           local_path: './*'
           # Ścieżka na LH dla SFTP zazwyczaj zaczyna się od /home/...
-          remote_path: '/home/platne/serwer417204/public_html/twojastronawwww.pl'
+          remote_path: '/home/platne/serwer417204/public_html/twojastronawww.pl'
           sftp_args: '-o ConnectTimeout=60'
 
           # local-dir: ./
