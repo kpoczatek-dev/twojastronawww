@@ -270,7 +270,8 @@ nav .container {
     color: var(--accent-color);
     padding: 2px 8px;
     border-radius: 4px;
-    margin-bottom: 10px;
+    margin-right: 12px;
+    margin-bottom: 0px;
     border: 1px solid rgba(6, 182, 212, 0.2);
     font-family: var(--font-mono);
 }
@@ -529,31 +530,118 @@ nav .container {
     -webkit-text-fill-color: transparent;
 }
 
+/* Default Grid (Mobile/Tablet) */
 .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 32px;
-    align-items: stretch; /* Ensure equal height */
 }
 
 .feature-card {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    padding: 40px 32px;
+    padding: 30px 24px;
     border-radius: 24px;
     position: relative;
     overflow: hidden;
     transition: transform 0.3s, border-color 0.3s, background 0.3s;
-    height: 100%; /* Fill the grid cell */
+    height: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: flex-start;
+    text-align: left;
+}
+
+/* Desktop Grid Overrides */
+@media (min-width: 1024px) {
+    /* Why Us: 8 items -> 4 columns = 2 rows */
+    #features .features-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* Portfolio: 4 items -> 2 columns = 2 rows
+       Constrain width to ~700px so cards are roughly same size as the 4-col layout above */
+    #portfolio .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+}
+
+
+.feature-card .icon {
+    font-size: 2.5rem;
+    margin-bottom: 0;
+    margin-right: 16px;
+    width: auto;
+    /* Neon Blue Theme */
+    filter: grayscale(100%) sepia(100%) hue-rotate(180deg) saturate(300%) drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+    transition: transform 0.3s;
+}
+
+.feature-card h3 {
+    margin-bottom: 0;
+    font-size: 1.3rem;
+    line-height: 1.2;
+    flex: 1; /* Take remaining space */
+}
+
+.feature-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+}
+
+.feature-card:hover .icon {
+    transform: scale(1.1) translateX(5px);
+    filter: grayscale(100%) sepia(100%) hue-rotate(180deg) saturate(400%) drop-shadow(0 0 20px var(--accent-color));
 }
 
 .feature-card p {
+    flex-basis: 100%;
+    width: 100%;
+    margin-top: 16px;
     color: var(--text-muted);
     font-size: 0.95rem;
     line-height: 1.7;
     flex-grow: 1; /* Push any bottom content down if needed */
+}
+
+/* Sticky Call Button */
+.sticky-call-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: var(--primary-color);
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    box-shadow: 0 0 20px rgba(0,255,136, 0.4);
+    z-index: 1000;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    border: 2px solid #fff;
+}
+
+.sticky-call-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(0,255,136, 0.6);
+}
+
+@media (max-width: 768px) {
+    .sticky-call-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
 }
 
 .section-cta {
@@ -629,53 +717,25 @@ nav .container {
     border-color: rgba(59, 130, 246, 0.3);
 }
 
-/* Tooltip */
-.tech-item::before {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 120%;
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    width: max-content;
-    max-width: 200px;
-    padding: 8px 12px;
-    background: rgba(15, 23, 42, 0.95);
-    color: #fff;
-    font-size: 0.85rem;
-    font-weight: 400;
-    border-radius: 8px;
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(4px);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 10;
+/* Tech Description Area */
+.tech-description {
+    min-height: 30px; /* Prevent layout shift */
+    margin-top: 40px;
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    font-weight: 500;
     text-align: center;
-    pointer-events: none;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: all 0.3s ease;
+    opacity: 0.8;
 }
 
-/* Tooltip Arrow */
-.tech-item::after {
-    content: '';
-    position: absolute;
-    bottom: 110%;
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    border-width: 6px;
-    border-style: solid;
-    border-color: rgba(15, 23, 42, 0.95) transparent transparent transparent;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 10;
-}
-
-.tech-item:hover::before,
-.tech-item:hover::after {
+.tech-description.active {
     opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
+    color: #fff;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
 }
 
 /* Contact / Footer */

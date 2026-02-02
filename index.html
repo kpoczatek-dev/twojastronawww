@@ -7,6 +7,9 @@
     <title>TwojaStronaWWW - Profesjonalne Strony z Własnym Panelem Admin</title>
     <meta name="description"
         content="Tworzymy szybkie, nowoczesne strony internetowe z integracją Git, własnym panelem administracyjnym i systemem odzyskiwania leadów.">
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,10 +29,11 @@
         <nav class="container">
             <a href="#" class="logo">TwojaStronaWWW</a>
             <div class="nav-links">
-                <a href="#features">Oferta</a>
+                <a href="#features">Dlaczego my?</a>
                 <a href="#portfolio">Realizacje</a>
-                <a href="#about">O mnie</a>
+                <a href="#pricing">Cennik</a>
                 <a href="#contact">Kontakt</a>
+                <a href="#tech">Technologie</a>
             </div>
         </nav>
     </header>
@@ -93,6 +97,15 @@
     <section id="features" class="features">
         <div class="container">
             <h2 class="section-title">Dlaczego my?</h2>
+
+            <p
+                style="text-align: center; max-width: 800px; margin: 0 auto 50px; color: var(--text-muted); font-size: 1.1rem;">
+                Moje strony nie są składane z gotowych klocków. Wykorzystuję moc <strong>czystego PHP</strong> do
+                tworzenia dedykowanych rozwiązań, które są lekkie,
+                bezpieczne i dopasowane co do milimetra do Twoich potrzeb. Dzięki temu masz pewność, że Twoja strona nie
+                tylko świetnie wygląda, ale też błyskawicznie się ładuje.
+            </p>
+
             <div class="features-grid">
 
                 <!-- Feature 1: Git -->
@@ -133,6 +146,30 @@
                     <h3>Web Scraping & Automatyzacja</h3>
                     <p>Tworzę dedykowane skrypty, które automatyzują procesy zbierania informacji z sieci. Oszczędzaj
                         godziny pracy, niech technologia robi to za Ciebie.</p>
+                </div>
+
+                <!-- Feature 6: Visual Coherence -->
+                <div class="feature-card">
+                    <div class="icon">🎨</div>
+                    <h3>Spójność Wizualna</h3>
+                    <p>Tworzę projekty dopasowane do charakteru branży. Twoja strona będzie nie tylko działać, ale też
+                        budować profesjonalny wizerunek marki.</p>
+                </div>
+
+                <!-- Feature 7: Mobile First -->
+                <div class="feature-card">
+                    <div class="icon">📱</div>
+                    <h3>Mobile First & UX</h3>
+                    <p>Projektuję z myślą o użytkowniku. Intuitywna nawigacja i perfekcyjne działanie na telefonach to u
+                        mnie standard, nie dodatek.</p>
+                </div>
+
+                <!-- Feature 8: Versatility -->
+                <div class="feature-card">
+                    <div class="icon">💼</div>
+                    <h3>Wszechstronność</h3>
+                    <p>Od prostych wizytówek po skomplikowane systemy E-commerce. Rozumiem biznesowe cele strony i wiem
+                        jak je zrealizować technicznie.</p>
                 </div>
 
             </div>
@@ -178,6 +215,17 @@
                         style="margin-top: 20px; font-size: 0.8rem; padding: 8px 16px;">Zobacz Live</a>
                 </div>
 
+                <!-- Project 4: FuegoLingua -->
+                <div class="feature-card">
+                    <div class="icon">🇪🇸</div>
+                    <span class="location-tag">Katowice</span>
+                    <h3>FuegoLingua</h3>
+                    <p>Wizytówka dla nauczycielki hiszpańskiego. Kompleksowe wdrożenie: konfiguracja domeny, SSL,
+                        Cloudflare oraz samodzielny deployment strony.</p>
+                    <a href="https://fuegolingua.pl/" target="_blank" class="btn btn-secondary"
+                        style="margin-top: 20px; font-size: 0.8rem; padding: 8px 16px;">Zobacz Live</a>
+                </div>
+
             </div>
         </div>
     </section>
@@ -190,26 +238,28 @@
 
                 <div class="pricing-card">
                     <h3>Wizytówka / Landing</h3>
-                    <div class="price">2499 <span>PLN</span></div>
+                    <div class="price">99 <span>PLN / mc</span></div>
                     <ul class="pricing-features">
                         <li>Indywidualny Projekt Graficzny</li>
                         <li>Responsywność (RWD)</li>
                         <li>Podstawowe SEO</li>
                         <li>Formularz Kontaktowy</li>
-                        <li>Hosting + Domena (1 rok)</li>
+                        <li>Hosting + Domena w cenie</li>
+                        <li>Certyfikat SSL</li>
                     </ul>
                     <a href="#contact" class="btn btn-secondary">Wybieram</a>
                 </div>
 
                 <div class="pricing-card featured">
                     <h3>Strona Firmowa</h3>
-                    <div class="price">5500 <span>PLN</span></div>
+                    <div class="price">199 <span>PLN / mc</span></div>
                     <ul class="pricing-features">
                         <li>Do 10 Podstron</li>
                         <li>System CMS (Flat-File)</li>
                         <li>Blog / Aktualności</li>
                         <li>Integracja Google Maps & Social</li>
                         <li>Optymalizacja Szybkości</li>
+                        <li>Wsparcie Techniczne</li>
                     </ul>
                     <a href="#contact" class="btn btn-primary">Najpopularniejszy</a>
                 </div>
@@ -222,7 +272,7 @@
                         <li>Płatności Online</li>
                         <li>Dedykowane Funkcje</li>
                         <li>Panel Klienta</li>
-                        <li>Wsparcie Techniczne</li>
+                        <li>Wsparcie Techniczne Premium</li>
                     </ul>
                     <a href="#contact" class="btn btn-secondary">Zapytaj o wycenę</a>
                 </div>
@@ -231,52 +281,50 @@
         </div>
     </section>
 
-    <!-- About Section -->
-    <section id="about" class="features">
+
+
+    <!-- Contact Section -->
+    <section id="contact" class="features">
         <div class="container">
-            <h2 class="section-title">Dlaczego Warto Współpracować?</h2>
+            <h2 class="section-title">Skontaktuj się</h2>
+            <div class="contact-wrapper" style="max-width: 600px; margin: 0 auto 60px;">
+                <form id="contactForm" class="contact-form" style="display: flex; flex-direction: column; gap: 20px;">
+                    <!-- Honeypot for bots -->
+                    <input type="text" name="website_url" style="display:none !important;" tabindex="-1"
+                        autocomplete="off">
 
-            <p
-                style="text-align: center; max-width: 800px; margin: 0 auto 50px; color: var(--text-muted); font-size: 1.1rem;">
-                Moje strony nie są składane z gotowych klocków. Wykorzystuję moc <strong>czystego PHP</strong> do
-                tworzenia dedykowanych rozwiązań, które są lekkie,
-                bezpieczne i dopasowane co do milimetra do Twoich potrzeb. Dzięki temu masz pewność, że Twoja strona nie
-                tylko świetnie wygląda, ale też błyskawicznie się ładuje.
-            </p>
+                    <div id="formErrors"
+                        style="display: none; color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2); text-align: center;">
+                    </div>
 
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="icon">🎨</div>
-                    <h3>Spójność Wizualna</h3>
-                    <p>Tworzę projekty dopasowane do charakteru branży. Twoja strona będzie nie tylko działać, ale też
-                        budować profesjonalny wizerunek marki.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">📱</div>
-                    <h3>Mobile First & UX</h3>
-                    <p>Projektuję z myślą o użytkowniku. Intuitywna nawigacja i perfekcyjne działanie na telefonach to u
-                        mnie standard, nie dodatek.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">💼</div>
-                    <h3>Wszechstronność</h3>
-                    <p>Od prostych wizytówek po skomplikowane systemy E-commerce. Rozumiem biznesowe cele strony i wiem
-                        jak je zrealizować technicznie.</p>
-                </div>
-            </div>
-
-            <div class="section-cta">
-                <a href="#contact" class="btn btn-primary">Darmowa Konsultacja</a>
+                    <input type="text" name="name" placeholder="Imię i Nazwisko"
+                        style="padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; font-family: var(--font-main);"
+                        required>
+                    <input type="email" name="email" placeholder="Adres Email"
+                        style="padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; font-family: var(--font-main);"
+                        required>
+                    <textarea name="message" placeholder="Twoja wiadomość..." rows="5"
+                        style="padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; font-family: var(--font-main);"
+                        required></textarea>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Wyślij Wiadomość</button>
+                    <p id="formSuccess" style="display: none; color: #27c93f; text-align: center; margin-top: 10px;">
+                        Wiadomość wysłana pomyślnie!</p>
+                </form>
             </div>
         </div>
     </section>
 
+    <!-- Sticky Call Button -->
+    <a href="tel:535050460" class="sticky-call-btn" title="Zadzwoń teraz">
+        📞
+    </a>
+
     <!-- Stats Section -->
-    <section class="stats">
+    <section class="stats" id="tech">
         <div class="container">
             <div class="stats-grid">
                 <div class="stat-item">
-                    <h3>3+</h3>
+                    <h3>4+</h3>
                     <p>Unikalne Realizacje</p>
                 </div>
                 <div class="stat-item">
@@ -315,18 +363,23 @@
                 <div class="tech-item" data-tooltip="Widoczność w Google. Twoja strona przyciąga klientów sama.">SEO
                 </div>
             </div>
+            <div id="tech-description" class="tech-description">
+                Najedź na technologię, aby zobaczyć szczegóły.
+            </div>
         </div>
     </section>
 
+
+
     <!-- Footer -->
-    <footer id="contact">
+    <footer>
         <div class="container">
             <p>&copy; 2026 TwojaStronaWWW. Wszelkie prawa zastrzeżone.</p>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="script.js"></script>
+    <script src="script.js?v=3"></script>
 </body>
 
 </html>
