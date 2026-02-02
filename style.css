@@ -585,7 +585,9 @@ nav .container {
     margin-bottom: 0;
     font-size: 1.3rem;
     line-height: 1.2;
-    flex: 1; /* Take remaining space */
+    flex-basis: 100%; /* Force new line */
+    width: 100%;
+    margin-top: 16px; /* Spacing from icon */
 }
 
 .feature-card:hover {
