@@ -779,6 +779,17 @@ footer {
     font-size: 0.9rem;
 }
 
+.footer-link {
+    font-size: 0.9em;
+    text-decoration: underline;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.footer-link:hover {
+    opacity: 1;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .hero h1 {
