@@ -472,6 +472,7 @@ nav .container {
     gap: 16px;
     justify-content: center;
     animation: fadeInUp 0.8s ease-out 0.4s backwards;
+    margin-bottom: 20px; /* Force some spacing, but less than default implicit */
 }
 
 /* Buttons */
@@ -519,6 +520,13 @@ nav .container {
     z-index: 1;
 }
 
+#benefits {
+    padding-top: 10px;
+    margin-top: -60px; /* Pull it up closer to Hero */
+    position: relative;
+    z-index: 2; /* Ensure it stays above if overlap */
+}
+
 .section-title {
     text-align: center;
     font-size: 2.5rem;
@@ -560,13 +568,19 @@ nav .container {
     #features .features-grid {
         grid-template-columns: repeat(4, 1fr);
     }
+    
+    /* Benefits: 3 items -> 3 columns = 1 row */
+     #benefits .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 
     /* Portfolio: 4 items -> 2 columns = 2 rows
        Constrain width to ~700px so cards are roughly same size as the 4-col layout above */
     #portfolio .features-grid {
         grid-template-columns: repeat(2, 1fr);
-        max-width: 700px;
-        margin: 0 auto;
+        /* MAX-WIDTH REMOVED to stretch full container width */
+        /* max-width: 700px; */
+        /* margin: 0 auto; */
     }
 }
 
@@ -585,9 +599,24 @@ nav .container {
     margin-bottom: 0;
     font-size: 1.3rem;
     line-height: 1.2;
-    flex-basis: 100%; /* Force new line */
-    width: 100%;
-    margin-top: 16px; /* Spacing from icon */
+    flex: 1; /* Take remaining space */
+    width: auto; /* Allow sitting next to icon */
+    margin-top: 0; /* Remove top spacing */
+}
+
+.location-tag {
+    /* flex-basis: 100%; REMOVED to prevent full width */
+    width: fit-content;
+    margin-top: 8px;
+    margin-bottom: 8px; /* Added spacing below */
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    
+    /* Optional: styling if user wants "ladnie wygladalo" like a tag */
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 10px;
+    border-radius: 4px;
 }
 
 .feature-card:hover {
