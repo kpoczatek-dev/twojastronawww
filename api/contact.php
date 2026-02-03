@@ -22,23 +22,41 @@ if (!empty($data['website_url'])) {
     exit;
 }
 
-// Origin / Referer check
+// Strict Origin / Referer check
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $referer = $_SERVER['HTTP_REFERER'] ?? '';
+
+// Musimy mieć pewność skąd pochodzi żądanie
+if (!$origin && !$referer) {
+    http_response_code(403);
+    echo json_encode(["status" => "error", "message" => "Forbidden (Missing Origin/Referer)"]);
+    exit;
+}
 
 // Dynamiczne sprawdzanie domeny (Localhost + Produkcja)
 $allowedDomains = ['twojastronawww.pl', 'localhost', '127.0.0.1'];
 $isAllowed = false;
 
-foreach ($allowedDomains as $domain) {
-    if (strpos($origin, $domain) !== false || strpos($referer, $domain) !== false) {
-        $isAllowed = true;
-        break;
+// Sprawdzamy Origin (jeśli jest)
+if ($origin) {
+    foreach ($allowedDomains as $domain) {
+        if (strpos($origin, $domain) !== false) {
+            $isAllowed = true;
+            break;
+        }
+    }
+}
+// Jeśli brak Origin, sprawdzamy Referer
+else if ($referer) {
+    foreach ($allowedDomains as $domain) {
+        if (strpos($referer, $domain) !== false) {
+            $isAllowed = true;
+            break;
+        }
     }
 }
 
-if (!$isAllowed && ($origin || $referer)) {
-    // Blokujemy tylko jeśli przesłano nagłówki Origin/Referer i nie pasują
+if (!$isAllowed) {
     http_response_code(403);
     echo json_encode(["status" => "error", "message" => "Forbidden Origin"]);
     exit;

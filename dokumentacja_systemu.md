@@ -1,44 +1,103 @@
-# Dokumentacja Projektu - TwojaStronaWWW
+# 📘 Dokumentacja Techniczna - TwojaStronaWWW
 
-## 📂 Struktura Plików i Odpowiedzialność
+Kompletny przewodnik po architekturze, bezpieczeństwie i działaniu systemu kontaktowego.
 
-### 1. Backend (Katalog `api/`)
+---
 
-Te pliki odpowiadają za "mózg" formularza i bezpieczeństwo.
+## 🏛 Architektura Systemu
 
-| Plik | Opis | Kiedy działa? |
+Projekt jest lekki, oparty na **PHP (Backend)** i **Vanilla JS (Frontend)**. Nie wymaga bazy SQL – wszystkie dane są zapisywane w plikach CSV. Skupia się na bezpieczeństwie (CSRF, Rate Limiting) i niezawodności (Lead Recovery).
+
+### Struktura Katalogów
+
+```
+d:/Projekty/twojastronawww/
+├── api/                  # Logika backendowa (PHP)
+│   ├── admin.php         # Panel administratora (wymaga PIN)
+│   ├── bootstrap.php     # Konfiguracja globalna (sesje, nagłówki)
+│   ├── contact.php       # Endpoint wysyłki formularza
+│   ├── csrf.php          # Ochrona przed Cross-Site Request Forgery
+│   ├── error_log         # Logi błędów PHP
+│   ├── export-leads.php  # Eksport danych do CSV
+│   ├── get-csrf-token.php# Endpoint pobierania tokena dla JS
+│   ├── leads-store.php   # Biblioteka zapisu CSV
+│   ├── lead-recovery.php # Zapis wersji roboczych (draftów)
+│   ├── rate-limit.php    # Ochrona przed spamem/brute-force
+│   └── sessions/         # Bezpieczny katalog sesji serwera
+├── assets/
+│   └── js/
+│       └── contact.js    # Logika formularza (AJAX, walidacja, auto-save)
+├── index.html            # Strona główna
+├── jak-pracuje.html      # Podstrona informacyjna
+└── dokumentacja_systemu.md # Ten plik
+```
+
+---
+
+## 🛡 Bezpieczeństwo i Funkcje
+
+### 1. Ochrona CSRF (Cross-Site Request Forgery)
+System używa modelu **"Double Submit Cookie"** dostosowanego do nowoczesnych przeglądarek.
+-   **Działanie:** Przy wejściu na stronę, JS pobiera unikalny token z `api/get-csrf-token.php`.
+-   **Weryfikacja:** Przy wysyłce formularza, token jest wysyłany w nagłówku/body JSON. Backend sprawdza zgodność tokena z ciasteczkiem `csrf_token`.
+-   **Smart Domain:** System automatycznie wykrywa czy działa na `localhost` czy na `twojastronawww.pl` i odpowiednio ustawia flagi ciasteczek (`Secure`, `HttpOnly`, `SameSite=Lax`).
+
+### 2. Rate Limiting (Ochrona przed Spamem)
+Każdy endpoint jest chroniony licznikiem opartym na IP.
+-   **Pobranie tokena:** Max 20/h.
+-   **Wysyłka wiadomości:** Max 5/5min.
+-   **Drafty (pisanie):** Max 20/h.
+> **Reset:** Limity są przechowywane w katalogu tymczasowym systemu (`/tmp` lub `AppData/Local/Temp`).
+
+### 3. Lead Recovery (Odzyskiwanie Koszyków)
+Kiedy użytkownik zaczyna pisać, ale nie wysyła wiadomości:
+-   Skrypt `contact.js` co 15 sekund (oraz przy zamknięciu karty) wysyła treść do `api/lead-recovery.php`.
+-   Dane trafiają do pliku `api/leads_draft_YYYY-MM.csv`.
+-   Dzięki temu możesz odzyskać potencjalnego klienta, który zrezygnował w ostatniej chwili.
+
+---
+
+## 💻 Backend (API)
+
+| Plik | Rola | Opis |
 | :--- | :--- | :--- |
-| **`contact.php`** | **Główny skrypt wysyłki.** Wysyła maila do Ciebie, autoresponder do klienta i zapisuje "twardego" leada w `leads_YYYY-MM.csv`. | Po kliknięciu "Wyślij". |
-| **`lead-recovery.php`** | **Ratowanie porzuconych koszyków.** Zapisuje wpisywane dane w tle (drafty) do `leads_draft_YYYY-MM.csv`. | Gdy użytkownik pisze, ale nie wysyła. |
-| **`get-csrf-token.php`** | **Endpoint CSRF.** Zwraca token w JSON dla JavaScriptu. | Przy ładowaniu strony (AJAX). |
-| **`libs`** | `csrf.php`, `rate-limit.php`, `leads-store.php`. Biblioteki funkcji (nie uruchamiać bezpośrednio). | Używane wewnątrz PHP. |
-| **`bootstrap.php`** | **Jądro systemu.** Startuje sesję, ładuje biblioteki, ustawia nagłówki security i PIN. | Załączany przez każdy inny plik PHP. |
-| **`admin.php`** | **Panel Administracyjny.** Pozwala przeglądać zarówno finalne leady, jak i drafty. Wymaga PINu. | Ręczne wejście przez przeglądarkę. |
-| **`export-leads.php`** | **Eksport danych.** Pobiera wszystkie finalne leady ze wszystkich miesięcy i łączy w jeden plik CSV. | Po kliknięciu "Eksportuj" w panelu. |
+| **`contact.php`** | Core | Waliduje dane, sprawdza CSRF/Origin, wysyła e-mail i zapisuje leada. Odpowiada JSON-em. |
+| **`bootstrap.php`** | Config | Ładowany przez każdy plik. Konfiguruje sesje, nagłówki bezpieczeństwa (`X-Frame-Options` itp.) i stałe. |
+| **`leads-store.php`** | Data | Obsługuje odczyt i zapis do plików CSV. Dba o blokowanie plików (race conditions). |
 
 ---
 
-### 2. Frontend (Strona)
+## 📦 Dane i Logi
 
-| Plik | Opis |
-| :--- | :--- |
-| **`index.html`** | Główna strona. Zawiera formularz HTML (bez atrybutów `required`, żeby JS mógł działać). |
-| **`assets/js/contact.js`** | **Logika przeglądarki.** <br>1. Pobiera token CSRF.<br>2. Wysyła drafty co 2 sekundy (`lead-recovery`).<br>3. Waliduje formularz.<br>4. Wysyła finalne dane (`contact.php`).<br>5. Obsługuje błędy i komunikaty. |
+Wszystkie dane są w katalogu `api/`:
 
----
+1.  **Leady (Sukces):** `leads_2026-02.csv`
+    -   Zawiera: Data, Czas, Imię, Email, Wiadomość, Hash IP.
+2.  **Drafty (Robocze):** `leads_draft_2026-02.csv`
+    -   Zawiera te same pola, ale dla niedokończonych wiadomości.
 
-### 3. Dane (Katalog `api/`) - Pliki generowane automatycznie
-
-| Plik | Opis |
-| :--- | :--- |
-| `leads_2026-02.csv` | **Baza Klientów.** Tutaj lądują poprawne zgłoszenia. Jeden plik na miesiąc. |
-| `leads_draft_2026-02.csv` | **Brudnopis.** Tutaj lądują nieskończone wpisy. Jeden plik na miesiąc. |
-| `rate_limit.json` | Plik techniczny. Przechowuje liczniki blokad dla adresów IP. |
+> **Backup:** Pliki CSV warto regularnie kopiować (np. przez FTP). Panel admina posiada funkcję Eksportu.
 
 ---
 
-## 🔐 Dostęp do Paneli
+## 🔧 Rozwiązywanie Problemów
 
-*   **Panel Administracyjny:** `https://twojastronawww.pl/api/admin.php?pin=9f3a7c21b8e44d0f` (PIN jest usuwany z adresu po zalogowaniu).
+### Błąd 403 (Forbidden) przy wysyłce
+-   **Przyczyna:** Błędny token CSRF lub wygasła sesja.
+-   **Rozwiązanie:** Odśwież stronę. JS automatycznie spróbuje pobrać nowy token. Sprawdź czy Twoja przeglądarka nie blokuje ciasteczek.
 
-> **Wskazówka:** Po pierwszym wejściu PIN zostaje zapamiętany w Twojej przeglądarce (sesja), więc przy kolejnych odświeżeniach nie musisz go wpisywać.
+### Błąd 429 (Too Many Requests)
+-   **Przyczyna:** Zbyt częste klikanie "Wyślij" lub odświeżanie.
+-   **Rozwiązanie:** Odczekaj 5-60 minut. Na serwerze można wyczyścić pliki `rate_*.json` w katalogu temp.
+
+### "Błąd Serwera" (500)
+-   **Przyczyna:** Często problem z funkcją `mail()` na localhost (brak serwera SMTP).
+-   **Rozwiązanie:** Na produkcji powinno działać. Na localhost sprawdź logi PHP (`api/error_log`).
+
+---
+
+## 🔐 Panel Administracyjny
+Dostęp do podglądu leadów:
+`https://twojastronawww.pl/api/admin.php?pin=9f3a7c21b8e44d0f`
+
+> **Ważne:** PIN jest jednorazowy w sesji (po wejściu system go pamięta). Nie udostępniaj go nikomu.

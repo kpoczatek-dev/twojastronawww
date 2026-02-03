@@ -10,7 +10,7 @@ function test($name, $result, $expected) {
     }
 }
 
-function req($url, $method = 'GET', $data = [], $cookies = []) {
+function req($url, $method = 'GET', $data = [], $cookies = [], $headers = []) {
     $opts = [
         'http' => [
             'method' => $method,
@@ -19,18 +19,21 @@ function req($url, $method = 'GET', $data = [], $cookies = []) {
         ]
     ];
     
+    // Cookies
     if ($cookies) {
         $cookieStr = [];
         foreach ($cookies as $k => $v) $cookieStr[] = "$k=$v";
         $opts['http']['header'] .= "\r\nCookie: " . implode('; ', $cookieStr);
     }
+
+    // Custom Headers (Origin, Referer)
+    foreach ($headers as $k => $v) {
+        $opts['http']['header'] .= "\r\n$k: $v";
+    }
     
     if ($data) {
         $opts['http']['content'] = json_encode($data);
     }
-    
-    // Simulate Origin checks
-    $opts['http']['header'] .= "\r\nOrigin: http://localhost:8999";
 
     $context = stream_context_create($opts);
     $response = file_get_contents($url, false, $context);
@@ -51,76 +54,86 @@ function req($url, $method = 'GET', $data = [], $cookies = []) {
     return ['body' => $response, 'status' => $status, 'cookies' => $respCookies];
 }
 
-echo "Starting CSRF Live Tests...\n";
+echo "Starting Strict Session CSRF Live Tests...\n";
 
-// 1. Get Token
-echo "1. Fetching Token...\n";
+// Clear Rate Limits first to avoid 429
+if (file_exists(__DIR__ . '/clean_limits.php')) {
+    include __DIR__ . '/clean_limits.php';
+}
+
+// 1. Get Token (starts Session)
+echo "1. Fetching Token (Session Start)...\n";
 $res1 = req("$baseUrl/get-csrf-token.php", 'GET');
 $token = json_decode($res1['body'], true)['token'] ?? '';
-$cookies = $res1['cookies'];
+// Capture PHPSESSID
+$cookies = $res1['cookies']; 
+
 test("Get Token Status", $res1['status'], 200);
 if (empty($token)) {
-    echo "[FAIL] Token received. Expected 1, got empty. Body: " . substr($res1['body'], 0, 500) . "\n";
+    echo "[FAIL] Token empty. Body: " . substr($res1['body'], 0, 500) . "\n";
 } else {
     echo "[PASS] Token received\n";
 }
-test("Cookie received", !empty($cookies['csrf_token']), true);
+// Expect PHPSESSID
+if (isset($cookies['PHPSESSID'])) {
+    echo "[PASS] PHPSESSID cookie received: " . substr($cookies['PHPSESSID'], 0, 5) . "...\n";
+} else {
+    echo "[FAIL] PHPSESSID cookie missing! Cookies received: " . json_encode($cookies) . "\n";
+}
+// Expect NO csrf_token cookie
+if (isset($cookies['csrf_token'])) {
+    echo "[FAIL] csrf_token cookie should NOT be present!\n";
+} else {
+    echo "[PASS] csrf_token cookie correctly absent\n";
+}
 
-// 2. Submit Contact Form WITHOUT Token
-echo "2. Submitting without token...\n";
+// 2. Submit WITHOUT Origin (Should Fail Strict Check)
+echo "2. Submitting without Origin/Referer...\n";
 $res2 = req("$baseUrl/contact.php", 'POST', [
-    'name' => 'Test', 'email' => 'test@example.com', 'message' => 'Hello'
-], $cookies); // Send cookies but NO token in body
-test("Missing Token in Body", $res2['status'], 403);
+    'name' => 'Test', 'email' => 'test@example.com', 'message' => 'Hello',
+    'csrf_token' => $token
+], $cookies);
+test("Missing Origin Blocked", $res2['status'], 403);
 
-// 3. Submit Contact Form WITH INVALID Token
-echo "3. Submitting with invalid token...\n";
+// 3. Submit WITH INVALID Origin
+echo "3. Submitting with INVALID Origin...\n";
 $res3 = req("$baseUrl/contact.php", 'POST', [
     'name' => 'Test', 'email' => 'test@example.com', 'message' => 'Hello',
-    'csrf_token' => 'invalid_token_123'
-], $cookies);
-test("Invalid Token", $res3['status'], 403);
+    'csrf_token' => $token
+], $cookies, ['Origin' => 'http://evil.com']);
+test("Invalid Origin Blocked", $res3['status'], 403);
 
-// 4. Submit Contact Form WITHOUT Cookie (but with token)
-echo "4. Submitting without cookie...\n";
+// 4. Submit WITHOUT Session Cookie (Session Loss)
+echo "4. Submitting without Session Cookie...\n";
 $res4 = req("$baseUrl/contact.php", 'POST', [
     'name' => 'Test', 'email' => 'test@example.com', 'message' => 'Hello',
     'csrf_token' => $token
-], []); // No cookies
-test("Missing Cookie", $res4['status'], 403);
+], [], ['Origin' => 'http://localhost:8999']); // Valid Origin, missing Cookie
+test("Missing Session Blocked", $res4['status'], 403);
 
-// 5. Success Path
-echo "5. Happy Path (Valid Token + Cookie)...\n";
-// Note: We might hit Rate Limit here if tests run fast or if previous tests counted?
-// check contact.php rate limit. It generates key based on IP.
-// 5 attempts per 5 minutes.
-// We made 3 fail attempts. This is 4th. Should be OK.
+// 5. Submit WITH Bad Token
+echo "5. Submitting with Bad Token...\n";
 $res5 = req("$baseUrl/contact.php", 'POST', [
     'name' => 'Test', 'email' => 'test@example.com', 'message' => 'Hello',
-    'csrf_token' => $token
-], $cookies);
+    'csrf_token' => 'bad_token'
+], $cookies, ['Origin' => 'http://localhost:8999']);
+test("Bad Token Blocked", $res5['status'], 403);
 
-// If 200 => Success. If 400 => Validation error (maybe email?).
-// If 429 => Rate limit.
-if ($res5['status'] === 429) {
-    echo "[WARN] Rate limit hit, cannot verify happy path fully.\n";
+// 6. Happy Path
+echo "6. Happy Path (Valid Session + Token + Origin)...\n";
+$res6 = req("$baseUrl/contact.php", 'POST', [
+    'name' => 'Test', 'email' => 'test@example.com', 'message' => 'Hello',
+    'csrf_token' => $token
+], $cookies, ['Origin' => 'http://localhost:8999']);
+
+if ($res6['status'] === 429) {
+    echo "[WARN] Rate limit hit on final API call.\n";
 } else {
-    // 200 is expected for valid submission
-    // But wait, contact.php sends validation error?
-    // "Uzupełnij wszystkie pola" -> checks name, email, message. We sent them.
-    // "Nieprawidłowy email" -> test@example.com is valid.
-    // "mail()" function might fail on localhost without SMTP.
-    // So status might be 500 if mail fails, or 200 if mail returns true (some setpus) or 500.
-    // But CSRF passed if we are past the Check!
-    // The CSRF check is early.
-    
-    // Let's modify expected: 200 or 500 (mail fail) or 400.
-    // Definitely NOT 403.
-    if ($res5['status'] === 403) {
-        test("Happy Path", $res5['status'], "200 or 500");
+    if ($res6['status'] === 200 || $res6['status'] === 500) {
+        echo "[PASS] Happy Path (Status: " . $res6['status'] . ") - Allowed!\n";
     } else {
-        echo "[PASS] Happy Path (Status: " . $res5['status'] . ") - CSRF Check passed (not 403)\n";
+        echo "[FAIL] Happy Path Blocked. Status: " . $res6['status'] . "\nBody: " . substr($res6['body'], 0, 500) . "\n";
     }
 }
 
-echo "Tests Completed.\n";
+echo "Strict Tests Completed.\n";
