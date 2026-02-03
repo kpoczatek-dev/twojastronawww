@@ -1,10 +1,19 @@
 <?php
-// ====== MINIMALNA OCHRONA ======
-$PIN = '9f3a7c21b8e44d0f'; // Bezpieczny PIN (dawny token)
+session_start();
+// ====== MINIMALNA OCHRONA (SESJA) ======
+$PIN = '9f3a7c21b8e44d0f'; // Bezpieczny PIN
 
-if (!isset($_GET['pin']) || $_GET['pin'] !== $PIN) {
+// 1. Logowanie PIN-em z URL
+if (isset($_GET['pin']) && $_GET['pin'] === $PIN) {
+    $_SESSION['auth_pin'] = $PIN;
+    header("Location: leads.php"); // Czysty URL
+    exit;
+}
+
+// 2. Sprawdzenie sesji
+if (!isset($_SESSION['auth_pin']) || $_SESSION['auth_pin'] !== $PIN) {
     http_response_code(403);
-    exit('Brak dostępu');
+    exit('Brak dostępu. Użyj linku z PIN-em.');
 }
 
 // ====== WCZYTANIE DANYCH (CSV) ======
@@ -51,7 +60,7 @@ th { background: #f3f3f3; }
 <h1>Leady (<?= count($leads) ?>)</h1>
 
 <p>
-<a href="export-leads.php?pin=<?= urlencode($PIN) ?>" class="btn">Eksportuj wszystkie do CSV</a>
+<a href="export-leads.php" class="btn">Eksportuj wszystkie do CSV</a>
 </p>
 
 <table>

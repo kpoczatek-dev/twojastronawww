@@ -1,7 +1,11 @@
-<?php
-$PIN = '9f3a7c21b8e44d0f'; // Ten sam PIN co w leads.php
+session_start();
+$PIN = '9f3a7c21b8e44d0f';
 
-if (!isset($_GET['pin']) || $_GET['pin'] !== $PIN) {
+// Dostęp z sesji LUB bezpośrednio z PIN (dla API)
+$is_authorized = (isset($_SESSION['auth_pin']) && $_SESSION['auth_pin'] === $PIN) ||
+                 (isset($_GET['pin']) && $_GET['pin'] === $PIN);
+
+if (!$is_authorized) {
     http_response_code(403);
     exit('Brak dostępu');
 }
