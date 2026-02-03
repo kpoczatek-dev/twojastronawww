@@ -4,7 +4,7 @@ require_once __DIR__ . '/bootstrap.php';
 /* ========= AUTORYZACJA ========= */
 if (isset($_GET['pin']) && $_GET['pin'] === APP_PIN) {
     $_SESSION['auth_pin'] = APP_PIN;
-    unset($_GET['pin']); // Cleaning footprint
+    unset($_GET['pin']); // Cleaning footprintll
     header("Location: admin.php");
     exit;
 }
