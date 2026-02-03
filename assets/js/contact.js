@@ -2,14 +2,34 @@
 const API_BASE = '/api/';
 let CSRF_TOKEN = '';
 
-// 1. Pobranie tokena CSRF na starcie
-fetch(API_BASE + 'get-csrf-token.php', { credentials: 'same-origin' })
-    .then(r => r.json())
-    .then(d => {
-        CSRF_TOKEN = d.token;
-        console.log('CSRF Token loaded');
+let csrfPromise = null;
+function loadCsrfToken() {
+    if (CSRF_TOKEN) return Promise.resolve(CSRF_TOKEN);
+    if (csrfPromise) return csrfPromise;
+
+    csrfPromise = fetch(API_BASE + 'get-csrf-token.php', {
+        credentials: 'same-origin',
+        cache: 'no-store'
     })
-    .catch(err => console.error('CSRF Error:', err));
+        .then(r => r.json())
+        .then(d => {
+            CSRF_TOKEN = d.token || '';
+            console.log('CSRF Token loaded');
+            return CSRF_TOKEN;
+        })
+        .catch(err => {
+            console.error('CSRF Error:', err);
+            CSRF_TOKEN = '';
+            return '';
+        })
+        .finally(() => {
+            csrfPromise = null;
+        });
+
+    return csrfPromise;
+}
+
+loadCsrfToken();
 
 function initContactForm() {
     const form = document.getElementById('contactForm');
@@ -99,6 +119,10 @@ function initContactForm() {
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
+        
+        if (!CSRF_TOKEN) {
+            await loadCsrfToken();
+        }
         data.csrf = CSRF_TOKEN; // Add CSRF token
 
         // Client-side Honeypot Check
@@ -113,6 +137,10 @@ function initContactForm() {
         btn.disabled = true;
 
         try {
+            if (!data.csrf) {
+                showError('Błąd CSRF. Odśwież stronę i spróbuj ponownie.');
+                return;
+            }
             // UPDATE: fetch from api/contact.php
             const response = await fetch(API_BASE + 'contact.php', {
                 method: 'POST',

@@ -11,7 +11,8 @@ Te pliki odpowiadają za "mózg" formularza i bezpieczeństwo.
 | **`contact.php`** | **Główny skrypt wysyłki.** Wysyła maila do Ciebie, autoresponder do klienta i zapisuje "twardego" leada w `leads_YYYY-MM.csv`. | Po kliknięciu "Wyślij". |
 | **`lead-recovery.php`** | **Ratowanie porzuconych koszyków.** Zapisuje wpisywane dane w tle (drafty) do `leads_draft_YYYY-MM.csv`. | Gdy użytkownik pisze, ale nie wysyła. |
 | **`get-csrf-token.php`** | **Endpoint CSRF.** Zwraca token w JSON dla JavaScriptu. | Przy ładowaniu strony (AJAX). |
-| **`libs (csrf, rate..)`** | **Biblioteki:** `csrf.php`, `rate-limit.php`, `leads-store.php`. Helpery ładowane przez `bootstrap.php`. | Używane wewnątrz PHP. |
+| **`libs`** | `csrf.php`, `rate-limit.php`, `leads-store.php`. Biblioteki funkcji (nie uruchamiać bezpośrednio). | Używane wewnątrz PHP. |
+| **`bootstrap.php`** | **Jądro systemu.** Startuje sesję, ładuje biblioteki, ustawia nagłówki security i PIN. | Załączany przez każdy inny plik PHP. |
 | **`admin.php`** | **Panel Administracyjny.** Pozwala przeglądać zarówno finalne leady, jak i drafty. Wymaga PINu. | Ręczne wejście przez przeglądarkę. |
 | **`export-leads.php`** | **Eksport danych.** Pobiera wszystkie finalne leady ze wszystkich miesięcy i łączy w jeden plik CSV. | Po kliknięciu "Eksportuj" w panelu. |
 
@@ -38,6 +39,6 @@ Te pliki odpowiadają za "mózg" formularza i bezpieczeństwo.
 
 ## 🔐 Dostęp do Paneli
 
-*   **Panel Administracyjny (Leady + Drafty):** `https://twojastronawww.pl/api/admin.php?pin=9f3a7c21b8e44d0f`
+*   **Panel Administracyjny:** `https://twojastronawww.pl/api/admin.php?pin=9f3a7c21b8e44d0f` (PIN jest usuwany z adresu po zalogowaniu).
 
 > **Wskazówka:** Po pierwszym wejściu PIN zostaje zapamiętany w Twojej przeglądarce (sesja), więc przy kolejnych odświeżeniach nie musisz go wpisywać.
