@@ -22,10 +22,10 @@ if (!empty($data['website_url'])) {
 }
 
 // CSRF
-if (!isset($_SESSION['csrf_token'])) {
-    error_log('[DEBUG] CSRF ERROR: $_SESSION["csrf_token"] is missing! Session ID: ' . session_id());
+if (!isset($_COOKIE['csrf_token'])) {
+    error_log('[DEBUG] CSRF ERROR: $_COOKIE["csrf_token"] is missing!');
 } else {
-    error_log('[DEBUG] CSRF CHECK: Session token: ' . $_SESSION['csrf_token'] . ' vs Input: ' . ($data['csrf'] ?? 'NULL'));
+    error_log('[DEBUG] CSRF CHECK: Cookie token: ' . $_COOKIE['csrf_token'] . ' vs Input: ' . ($data['csrf'] ?? 'NULL'));
 }
 
 if (!csrf_check($data['csrf'] ?? null)) {

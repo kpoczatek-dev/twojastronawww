@@ -60,7 +60,6 @@ function initContactForm() {
     function sendDraft(isUnload = false) {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        const data = Object.fromEntries(formData.entries());
         // data.csrf = CSRF_TOKEN; // Drafty nie wymagają CSRF (i tak nie jest sprawdzany)
         
         // Only send if there's at least an email or phone/name so we know who it is
