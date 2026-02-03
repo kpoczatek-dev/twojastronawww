@@ -23,12 +23,12 @@ if (!empty($data['website_url'])) {
     exit;
 }
 
-// CSRF
-if (empty($data['csrf']) || $data['csrf'] !== ($_SESSION['csrf_token'] ?? null)) {
-    http_response_code(403);
-    echo json_encode(["status" => "error"]);
-    exit;
-}
+// CSRF pominięte dla Lead Recovery (sendBeacon compatibility)
+// if (empty($data['csrf']) || $data['csrf'] !== ($_SESSION['csrf_token'] ?? null)) {
+//     http_response_code(403);
+//     echo json_encode(["status" => "error"]);
+//     exit;
+// }
 
 $name = trim(strip_tags($data['name'] ?? ''));
 $email = trim($data['email'] ?? '');
