@@ -14,7 +14,7 @@ if (!rateLimit('lead_' . md5($ip), 20, 3600)) {
 
 $data = json_decode(file_get_contents("php://input"), true);
 if (!is_array($data)) {
-    $data = [];
+    $data = $_POST;
 }
 
 // honeypot

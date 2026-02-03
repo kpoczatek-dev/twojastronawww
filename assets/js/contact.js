@@ -50,8 +50,11 @@ function initContactForm() {
 
         // 🔥 KLUCZOWE: przy zamknięciu karty
         if (isUnload && navigator.sendBeacon) {
-            const blob = new Blob([payload], { type: 'application/json' });
-            navigator.sendBeacon('api/lead-recovery.php', blob);
+            const params = new URLSearchParams(data);
+            navigator.sendBeacon(
+                'api/lead-recovery.php',
+                params
+            );
             return;
         }
 
