@@ -29,7 +29,7 @@ if (!$name && !$email) {
     exit;
 }
 
-$file = __DIR__ . '/leads_' . date('Y-m-d') . '.csv';
+$file = __DIR__ . '/leads_' . date('Y-m') . '.csv';
 $isNew = !file_exists($file);
 
 $fp = fopen($file, 'a');

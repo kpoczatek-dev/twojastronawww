@@ -1,5 +1,5 @@
 <?php
-$SECRET_TOKEN = 'recovery'; // ← zmień na coś swojego
+$SECRET_TOKEN = '9f3a7c21b8e44d0f'; // ← bezpieczny token
 
 if (!isset($_GET['token']) || $_GET['token'] !== $SECRET_TOKEN) {
     http_response_code(403);
