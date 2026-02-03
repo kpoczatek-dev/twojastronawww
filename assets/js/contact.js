@@ -29,7 +29,7 @@ function loadCsrfToken() {
     return csrfPromise;
 }
 
-loadCsrfToken();
+// 1. loadCsrfToken usuwamy ze startu (lazy loading w submit)
 
 function initContactForm() {
     const form = document.getElementById('contactForm');
@@ -60,7 +60,8 @@ function initContactForm() {
     function sendDraft(isUnload = false) {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        data.csrf = CSRF_TOKEN; // Add CSRF token
+        const data = Object.fromEntries(formData.entries());
+        // data.csrf = CSRF_TOKEN; // Drafty nie wymagają CSRF (i tak nie jest sprawdzany)
         
         // Only send if there's at least an email or phone/name so we know who it is
         if (!data.email && !data.name) return;
@@ -120,9 +121,8 @@ function initContactForm() {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
         
-        if (!CSRF_TOKEN) {
-            await loadCsrfToken();
-        }
+        // Optymalizacja: ZAWSZE upewniamy się o token tutaj, eliminując wyścig przy starcie
+        await loadCsrfToken();
         data.csrf = CSRF_TOKEN; // Add CSRF token
 
         // Client-side Honeypot Check
