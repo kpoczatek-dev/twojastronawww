@@ -1,4 +1,15 @@
 // Contact Form Logic
+let CSRF_TOKEN = '';
+
+// 1. Pobranie tokena CSRF na starcie
+fetch('api/csrf.php', { credentials: 'same-origin' })
+    .then(r => r.json())
+    .then(d => {
+        CSRF_TOKEN = d.token;
+        console.log('CSRF Token loaded');
+    })
+    .catch(err => console.error('CSRF Error:', err));
+
 function initContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) return;
@@ -28,17 +39,19 @@ function initContactForm() {
     function sendDraft() {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
+        data.csrf = CSRF_TOKEN; // Add CSRF token
         
         // Only send if there's at least an email or phone/name so we know who it is
         if (!data.email && !data.name) return;
 
-        data.type = 'lead_recovery';
+        // Nie wysyłamy type: 'lead_recovery', bo endpoint jest dedykowany
 
         console.log('Sending draft (Lead Recovery)...');
-        // UPDATE: fetch from assets/php/contact.php
-        fetch('assets/php/contact.php', {
+        // UPDATE: fetch from api/lead-recovery.php
+        fetch('api/lead-recovery.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
             body: JSON.stringify(data)
         }).then(res => res.json())
           .then(res => console.log('Draft saved:', res))
@@ -66,6 +79,7 @@ function initContactForm() {
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
+        data.csrf = CSRF_TOKEN; // Add CSRF token
 
         // Client-side Honeypot Check
         if (data.website_url) {
@@ -79,15 +93,16 @@ function initContactForm() {
         btn.disabled = true;
 
         try {
-            // UPDATE: fetch from assets/php/contact.php
-            const response = await fetch('assets/php/contact.php', {
+            // UPDATE: fetch from api/contact.php
+            const response = await fetch('api/contact.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
                 body: JSON.stringify(data)
             });
 
             // Handle non-JSON responses gracefully
-            const result = await response.json().catch(() => ({ status: 'error', message: 'Błąd sewera.' }));
+            const result = await response.json().catch(() => ({ status: 'error', message: 'Błąd serwera.' }));
 
             if (response.ok && result.status === 'success') {
                 successMsg.style.display = 'block';
