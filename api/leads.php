@@ -28,7 +28,7 @@ foreach ($files as $file) {
         while (($data = fgetcsv($handle)) !== FALSE) {
             // Format CSV: date, time, name, email, message, ip_hash
             // Chcemy wyświetlić np. Email, Date, Name
-            if (count($data) >= 5) {
+            if (count($data) >= 6) {
                 $leads[] = [
                     'date' => $data[0] . ' ' . $data[1],
                     'name' => $data[2],
@@ -71,12 +71,14 @@ th { background: #f3f3f3; }
     <th>Wiadomość</th>
 </tr>
 
-<?php foreach ($leads as $lead): ?>
+<?php foreach ($leads as $lead): 
+    $msg = (string)($lead['message'] ?? '');
+?>
 <tr>
     <td><?= htmlspecialchars($lead['date']) ?></td>
     <td><?= htmlspecialchars($lead['name']) ?></td>
     <td><?= htmlspecialchars($lead['email']) ?></td>
-    <td><?= htmlspecialchars(mb_substr($lead['message'], 0, 50)) . (mb_strlen($lead['message']) > 50 ? '...' : '') ?></td>
+    <td><?= htmlspecialchars(mb_substr($msg, 0, 50)) . (mb_strlen($msg) > 50 ? '...' : '') ?></td>
 </tr>
 <?php endforeach; ?>
 
