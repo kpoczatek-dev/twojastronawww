@@ -3,7 +3,7 @@ const API_BASE = '/api/';
 let CSRF_TOKEN = '';
 
 // 1. Pobranie tokena CSRF na starcie
-fetch(API_BASE + 'csrf.php', { credentials: 'same-origin' })
+fetch(API_BASE + 'get-csrf-token.php', { credentials: 'same-origin' })
     .then(r => r.json())
     .then(d => {
         CSRF_TOKEN = d.token;

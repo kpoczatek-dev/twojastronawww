@@ -1,22 +1,17 @@
 <?php
-function rateLimit($key, $limit, $seconds) {
+function rate_limit(string $key, int $limit, int $seconds): bool {
     $dir = sys_get_temp_dir();
-    $file = "$dir/rate_" . preg_replace('/[^a-zA-Z0-9_]/', '', $key) . ".json";
+    $file = $dir . '/rate_' . preg_replace('/[^a-zA-Z0-9_]/', '', $key) . '.json';
     $now = time();
 
     if (!file_exists($file)) {
-        file_put_contents($file, json_encode(["count" => 1, "time" => $now]));
+        file_put_contents($file, json_encode(['count' => 1, 'time' => $now]));
         return true;
     }
 
     $data = json_decode(file_get_contents($file), true);
-    if (!$data) {
-        file_put_contents($file, json_encode(["count" => 1, "time" => $now]));
-        return true;
-    }
-
-    if ($now - $data['time'] > $seconds) {
-        file_put_contents($file, json_encode(["count" => 1, "time" => $now]));
+    if (!$data || $now - $data['time'] > $seconds) {
+        file_put_contents($file, json_encode(['count' => 1, 'time' => $now]));
         return true;
     }
 

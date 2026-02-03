@@ -1,116 +1,22 @@
 <?php
-session_start();
-ini_set('auto_detect_line_endings', true);
-
-$PIN = '9f3a7c21b8e44d0f';
+require_once __DIR__ . '/bootstrap.php';
 
 /* ========= AUTORYZACJA ========= */
-if (isset($_GET['pin']) && $_GET['pin'] === $PIN) {
-    $_SESSION['auth_pin'] = $PIN;
+if (isset($_GET['pin']) && $_GET['pin'] === APP_PIN) {
+    $_SESSION['auth_pin'] = APP_PIN;
+    unset($_GET['pin']); // Cleaning footprint
     header("Location: admin.php");
     exit;
 }
 
-if (!isset($_SESSION['auth_pin']) || $_SESSION['auth_pin'] !== $PIN) {
+if (!isset($_SESSION['auth_pin']) || $_SESSION['auth_pin'] !== APP_PIN) {
     http_response_code(403);
     exit('Brak dostępu. Użyj linku z PIN-em.');
 }
 
-/* ========= POMOCNICZA FUNKCJA ========= */
-function readCsv($pattern) {
-    $rows = [];
-    $files = glob(__DIR__ . '/' . $pattern);
-    rsort($files);
-
-    foreach ($files as $file) {
-        if (($h = fopen($file, 'r')) !== false) {
-            fgetcsv($h); // header
-            while (($row = fgetcsv($h)) !== false) {
-                if (count($row) === 6) {
-                    $rows[] = $row;
-                }
-            }
-            fclose($h);
-        }
-    }
-    return $rows;
-}
-
 /* ========= WCZYTANIE DANYCH ========= */
-// Ważne: leads_*.csv złapie też leads_draft_*.csv, więc musimy to odfiltrować
-// Ale chwila, w Twoim kodzie readCsv('leads_*.csv') złapie wszystko.
-// Musimy uważać. Ale w poprzednim kroku mówiłeś, że leads_*.csv łapie drafty.
-// Więc tutaj trzeba być precyzyjnym w funkcji readCsv albo w patternie.
-
-// Poprawka logiki: glob('leads_*.csv') złapie 'leads_draft_...'. 
-// Więc dla leadsów musimy wykluczyć 'draft'.
-
-function readCsvFiltered($pattern, $excludeDrafts = false, $onlyDrafts = false) {
-    $rows = [];
-    $files = glob(__DIR__ . '/' . $pattern);
-    rsort($files);
-
-    foreach ($files as $file) {
-        $basename = basename($file);
-        $isDraft = strpos($basename, '_draft_') !== false;
-
-        if ($excludeDrafts && $isDraft) continue;
-        if ($onlyDrafts && !$isDraft) continue;
-
-        if (($h = fopen($file, 'r')) !== false) {
-            fgetcsv($h); // header
-            while (($row = fgetcsv($h)) !== false) {
-                if (count($row) === 6) {
-                    $rows[] = $row;
-                }
-            }
-            fclose($h);
-        }
-    }
-    return $rows;
-}
-
-// Używam poprawionej logiki, żeby nie mieszać danych, zgodnie z poprzednimi ustaleniami
-$leads  = readCsvFiltered('leads_*.csv', true, false); 
-$drafts = readCsvFiltered('leads_draft_*.csv', false, true); 
-
-// Wróćmy jednak do Twojego kodu. Ty podałeś kod w requeście.
-// Jeśli użyję Twojego prostego readCsv('leads_*.csv') to w sekcji "Finalne leady" wyświetlą się TEŻ drafty (bo glob łapie).
-// Ale Ty dałeś kod: $leads = readCsv('leads_*.csv'); $drafts = readCsv('leads_draft_*.csv');
-// Zaufam Twojej intencji, ale ZMODYFIKUJĘ funkcję readCsv tak, by była IDIOTPROOF.
-// Bo `leads_*.csv` pasuje do `leads_draft_2026-02.csv`.
-// Więc zrobię to BEZPIECZNIE.
-
-function readLeads($isDraft) {
-    $rows = [];
-    $files = glob(__DIR__ . '/leads_*.csv');
-    rsort($files);
-
-    foreach ($files as $file) {
-        $basename = basename($file);
-        $fileIsDraft = strpos($basename, '_draft_') !== false;
-
-        // Jeśli chcemy leady, a plik to draft -> pomiń
-        if (!$isDraft && $fileIsDraft) continue;
-        
-        // Jeśli chcemy drafty, a plik to NIE draft -> pomiń (choć glob leads_draft_*.csv byłby lepszy, ale tu iterujemy po wszystkim dla pewności)
-        if ($isDraft && !$fileIsDraft) continue;
-
-        if (($h = fopen($file, 'r')) !== false) {
-            fgetcsv($h); // header
-            while (($row = fgetcsv($h)) !== false) {
-                if (count($row) === 6) {
-                    $rows[] = $row;
-                }
-            }
-            fclose($h);
-        }
-    }
-    return $rows;
-}
-
-$leads = readLeads(false);
-$drafts = readLeads(true);
+$leads  = read_leads(false);
+$drafts = read_leads(true);
 ?>
 <!doctype html>
 <html lang="pl">

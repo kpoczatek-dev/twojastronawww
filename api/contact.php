@@ -1,12 +1,10 @@
 <?php
-session_start();
+require_once __DIR__ . '/bootstrap.php';
 header("Content-Type: application/json; charset=UTF-8");
 
-require_once __DIR__ . "/rate-limit.php";
-
-$ip = $_SERVER['REMOTE_ADDR'];
+$ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 // Limit: 5 prób wysyłki na 5 minut
-if (!rateLimit('contact_' . md5($ip), 5, 300)) {
+if (!rate_limit('contact_' . md5($ip), 5, 300)) {
     http_response_code(429);
     echo json_encode(["status" => "error", "message" => "Za dużo prób."]);
     exit;
@@ -24,9 +22,9 @@ if (!empty($data['website_url'])) {
 }
 
 // CSRF
-if (empty($data['csrf']) || $data['csrf'] !== ($_SESSION['csrf_token'] ?? null)) {
+if (!csrf_check($data['csrf'] ?? null)) {
     http_response_code(403);
-    echo json_encode(["status" => "error"]);
+    echo json_encode(["status" => "error", "message" => "Błąd CSRF."]);
     exit;
 }
 
@@ -70,25 +68,13 @@ mail(
 );
 
 // ====== ZAPIS FINALNEGO LEADA ======
-$file = __DIR__ . '/leads_' . date('Y-m') . '.csv';
-$isNew = !file_exists($file);
-
-$fp = fopen($file, 'a');
-if ($fp) {
-    if ($isNew) {
-        fputcsv($fp, ['date','time','name','email','message','ip_hash']);
-    }
-
-    fputcsv($fp, [
-        date('Y-m-d'),
-        date('H:i:s'),
-        $name,
-        $email,
-        $message,
-        hash('sha256', $ip)
-    ]);
-
-    fclose($fp);
-}
+save_lead([
+    date('Y-m-d'),
+    date('H:i:s'),
+    $name,
+    $email,
+    $message,
+    hash('sha256', $ip)
+], false);
 
 echo json_encode(["status" => "success", "message" => "Wysłano."]);

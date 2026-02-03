@@ -10,8 +10,8 @@ Te pliki odpowiadają za "mózg" formularza i bezpieczeństwo.
 | :--- | :--- | :--- |
 | **`contact.php`** | **Główny skrypt wysyłki.** Wysyła maila do Ciebie, autoresponder do klienta i zapisuje "twardego" leada w `leads_YYYY-MM.csv`. | Po kliknięciu "Wyślij". |
 | **`lead-recovery.php`** | **Ratowanie porzuconych koszyków.** Zapisuje wpisywane dane w tle (drafty) do `leads_draft_YYYY-MM.csv`. | Gdy użytkownik pisze, ale nie wysyła. |
-| **`csrf.php`** | **Ochrona.** Generuje unikalny token dla każdego wejścia na stronę, aby zapobiec fałszywym żądaniom. | Przy ładowaniu strony. |
-| **`rate-limit.php`** | **Ochrona.** Biblioteka pomocnicza. Liczy próby wejścia z danego IP i blokuje spammerów. | Używany przez wszystkie powyższe. |
+| **`get-csrf-token.php`** | **Endpoint CSRF.** Zwraca token w JSON dla JavaScriptu. | Przy ładowaniu strony (AJAX). |
+| **`libs (csrf, rate..)`** | **Biblioteki:** `csrf.php`, `rate-limit.php`, `leads-store.php`. Helpery ładowane przez `bootstrap.php`. | Używane wewnątrz PHP. |
 | **`admin.php`** | **Panel Administracyjny.** Pozwala przeglądać zarówno finalne leady, jak i drafty. Wymaga PINu. | Ręczne wejście przez przeglądarkę. |
 | **`export-leads.php`** | **Eksport danych.** Pobiera wszystkie finalne leady ze wszystkich miesięcy i łączy w jeden plik CSV. | Po kliknięciu "Eksportuj" w panelu. |
 

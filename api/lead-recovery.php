@@ -1,11 +1,10 @@
 <?php
+require_once __DIR__ . '/bootstrap.php';
 header('Content-Type: application/json; charset=UTF-8');
 
-require_once __DIR__ . '/rate-limit.php';
+$ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
-$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-
-if (!rateLimit('lead_draft_' . md5($ip), 20, 3600)) {
+if (!rate_limit('lead_draft_' . md5($ip), 20, 3600)) {
     echo json_encode(['status' => 'ok']);
     exit;
 }
@@ -30,25 +29,13 @@ if (!$name && !$email && !$message) {
     exit;
 }
 
-$file = __DIR__ . '/leads_draft_' . date('Y-m') . '.csv';
-$isNew = !file_exists($file);
-
-$fp = fopen($file, 'a');
-if ($fp) {
-    if ($isNew) {
-        fputcsv($fp, ['date','time','name','email','message','ip_hash']);
-    }
-
-    fputcsv($fp, [
-        date('Y-m-d'),
-        date('H:i:s'),
-        $name,
-        $email,
-        $message,
-        hash('sha256', $ip)
-    ]);
-
-    fclose($fp);
-}
+save_lead([
+    date('Y-m-d'),
+    date('H:i:s'),
+    $name,
+    $email,
+    $message,
+    hash('sha256', $ip)
+], true);
 
 echo json_encode(['status' => 'ok']);

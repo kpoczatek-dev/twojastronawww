@@ -1,12 +1,17 @@
-session_start();
-ini_set('auto_detect_line_endings', true); // Fix dla Mac/Linux CSV
-$PIN = '9f3a7c21b8e44d0f';
+<?php
+require_once __DIR__ . '/bootstrap.php';
 
-// Dostęp z sesji LUB bezpośrednio z PIN (dla API)
-$is_authorized = (isset($_SESSION['auth_pin']) && $_SESSION['auth_pin'] === $PIN) ||
-                 (isset($_GET['pin']) && $_GET['pin'] === $PIN);
+/* ========= AUTORYZACJA ========= */
+// 1. Logowanie PIN-em (Redirect dla czystego URL)
+if (isset($_GET['pin']) && $_GET['pin'] === APP_PIN) {
+    $_SESSION['auth_pin'] = APP_PIN;
+    unset($_GET['pin']);
+    header("Location: export-leads.php");
+    exit;
+}
 
-if (!$is_authorized) {
+// 2. Sprawdzenie sesji
+if (!isset($_SESSION['auth_pin']) || $_SESSION['auth_pin'] !== APP_PIN) {
     http_response_code(403);
     exit('Brak dostępu');
 }
