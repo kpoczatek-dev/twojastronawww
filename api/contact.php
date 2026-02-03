@@ -11,16 +11,7 @@ if (!rate_limit('contact_' . md5($ip), 5, 300)) {
     exit;
 }
 
-$data = json_decode(file_get_contents("php://input"), true);
-if (!is_array($data)) {
-    $data = [];
-}
-
-// honeypot
-if (!empty($data['website_url'])) {
-    echo json_encode(["status" => "success"]);
-    exit;
-}
+$data = get_json_request();
 
 // Strict Origin / Referer check
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';

@@ -25,3 +25,20 @@ define('APP_PIN', '9f3a7c21b8e44d0f');
 require_once __DIR__ . '/rate-limit.php';
 require_once __DIR__ . '/leads-store.php';
 require_once __DIR__ . '/csrf.php';
+
+function get_json_request(): array {
+    $data = json_decode(file_get_contents("php://input"), true);
+    if (!is_array($data)) {
+        $data = $_POST;
+    }
+    
+    // Global Honeypot check
+    if (!empty($data['website_url'])) {
+        // Ciche zakończenie (sukces dla bota)
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode(["status" => "success"]);
+        exit;
+    }
+    
+    return $data;
+}

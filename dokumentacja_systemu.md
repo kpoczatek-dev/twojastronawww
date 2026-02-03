@@ -6,98 +6,80 @@ Kompletny przewodnik po architekturze, bezpieczeństwie i działaniu systemu kon
 
 ## 🏛 Architektura Systemu
 
-Projekt jest lekki, oparty na **PHP (Backend)** i **Vanilla JS (Frontend)**. Nie wymaga bazy SQL – wszystkie dane są zapisywane w plikach CSV. Skupia się na bezpieczeństwie (CSRF, Rate Limiting) i niezawodności (Lead Recovery).
+Projekt jest lekki, oparty na **PHP (Backend)** i **Vanilla JS (Frontend)**. Nie wymaga bazy SQL – wszystkie dane są zapisywane w plikach CSV. Skupia się na bezpieczeństwie (Strict CSRF, Session Auth) i niezawodności.
 
 ### Struktura Katalogów
 
 ```
 d:/Projekty/twojastronawww/
 ├── api/                  # Logika backendowa (PHP)
-│   ├── admin.php         # Panel administratora (wymaga PIN)
-│   ├── bootstrap.php     # Konfiguracja globalna (sesje, nagłówki)
+│   ├── admin.php         # Panel administratora (Logowanie + Zarządzanie)
+│   ├── bootstrap.php     # Konfiguracja globalna (sesje, nagłówki, stałe)
 │   ├── contact.php       # Endpoint wysyłki formularza
-│   ├── csrf.php          # Ochrona przed Cross-Site Request Forgery
-│   ├── error_log         # Logi błędów PHP
+│   ├── csrf.php          # Ochrona CSRF (Session One-Time Token)
+│   ├── delete-lead.php   # [NOWY] Usuwanie rekordów (wymaga Auth)
 │   ├── export-leads.php  # Eksport danych do CSV
-│   ├── get-csrf-token.php# Endpoint pobierania tokena dla JS
-│   ├── leads-store.php   # Biblioteka zapisu CSV
+│   ├── get-csrf-token.php# Endpoint pobierania tokena sesyjnego
+│   ├── leads-store.php   # Biblioteka zapisu/odczytu CSV (z Hashem ID)
 │   ├── lead-recovery.php # Zapis wersji roboczych (draftów)
-│   ├── rate-limit.php    # Ochrona przed spamem/brute-force
+│   ├── rate-limit.php    # Ochrona przed spamem (lokalna baza plików)
+│   ├── rate_limits/      # Katalog liczników (chroniony .htaccess)
 │   └── sessions/         # Bezpieczny katalog sesji serwera
 ├── assets/
 │   └── js/
-│       └── contact.js    # Logika formularza (AJAX, walidacja, auto-save)
+│       └── contact.js    # Logika formularza (AJAX, walidacja, auto-save 60s)
 ├── index.html            # Strona główna
-├── jak-pracuje.html      # Podstrona informacyjna
 └── dokumentacja_systemu.md # Ten plik
 ```
 
 ---
 
-## 🛡 Bezpieczeństwo i Funkcje
+## 🛡 Bezpieczeństwo
 
-### 1. Ochrona CSRF (Cross-Site Request Forgery)
-System używa modelu **"Double Submit Cookie"** dostosowanego do nowoczesnych przeglądarek.
--   **Działanie:** Przy wejściu na stronę, JS pobiera unikalny token z `api/get-csrf-token.php`.
--   **Weryfikacja:** Przy wysyłce formularza, token jest wysyłany w nagłówku/body JSON. Backend sprawdza zgodność tokena z ciasteczkiem `csrf_token`.
--   **Smart Domain:** System automatycznie wykrywa czy działa na `localhost` czy na `twojastronawww.pl` i odpowiednio ustawia flagi ciasteczek (`Secure`, `HttpOnly`, `SameSite=Lax`).
+### 1. Panel Administratora (`api/admin.php`)
+-   **Logowanie:** Formularz POST (PIN nie jest widoczny w URL).
+-   **Sesja:** Oparta na `$_SESSION['auth']` z czasem życia **30 minut** (TTL). Po bezczynności następuje automatyczne wylogowanie.
+-   **Usuwanie:** Wymaga potwierdzenia JS oraz poprawnego tokena CSRF. Fizycznie usuwa wiersz z pliku CSV.
 
-### 2. Rate Limiting (Ochrona przed Spamem)
-Każdy endpoint jest chroniony licznikiem opartym na IP.
--   **Pobranie tokena:** Max 20/h.
--   **Wysyłka wiadomości:** Max 5/5min.
--   **Drafty (pisanie):** Max 20/h.
-> **Reset:** Limity są przechowywane w katalogu tymczasowym systemu (`/tmp` lub `AppData/Local/Temp`).
+### 2. Ochrona CSRF (Strict Session)
+-   **One-Time Token:** Token jest ważny tylko na jedno użycie (rotacja po każdej wysyłce). Zapobiega atakom typu Replay.
+-   **Przechowywanie:** Wyłącznie w sesji serwera (brak ciasteczka `csrf_token`).
+-   **Origin Check:** Jeśli przeglądarka wysyła nagłówek `Origin` lub `Referer`, jest on weryfikowany z listą zaufanych domen.
 
-### 3. Lead Recovery (Odzyskiwanie Koszyków)
-Kiedy użytkownik zaczyna pisać, ale nie wysyła wiadomości:
--   Skrypt `contact.js` co 15 sekund (oraz przy zamknięciu karty) wysyła treść do `api/lead-recovery.php`.
--   Dane trafiają do pliku `api/leads_draft_YYYY-MM.csv`.
--   Dzięki temu możesz odzyskać potencjalnego klienta, który zrezygnował w ostatniej chwili.
+### 3. Rate Limiting (Anti-Spam)
+-   **Lokalizacja:** Liczniki w katalogu `api/rate_limits` (zabezpieczone przed dostępem z zewnątrz).
+-   **Mechanizm:** File Locking (`flock`) zapobiega błędom przy dużym ruchu.
+-   **Limity:**
+    -   Wysyłka: 5 prób / 5 minut.
+    -   Drafty: 20 prób / h.
 
 ---
 
 ## 💻 Backend (API)
 
-| Plik | Rola | Opis |
+| Plik | Funkcja | Opis |
 | :--- | :--- | :--- |
-| **`contact.php`** | Core | Waliduje dane, sprawdza CSRF/Origin, wysyła e-mail i zapisuje leada. Odpowiada JSON-em. |
-| **`bootstrap.php`** | Config | Ładowany przez każdy plik. Konfiguruje sesje, nagłówki bezpieczeństwa (`X-Frame-Options` itp.) i stałe. |
-| **`leads-store.php`** | Data | Obsługuje odczyt i zapis do plików CSV. Dba o blokowanie plików (race conditions). |
+| **`contact.php`** | Formularz | Walidacja, Honeypot, CSRF, wysyłka e-mail, zapis CSV. |
+| **`leads-store.php`** | Baza Danych | Odczyt/Zapis CSV. Generuje unikalny **Hash ID** rekordu (SHA-256) dla funkcji usuwania. Optymalizacja odczytu (limit 200). |
+| **`delete-lead.php`** | Admin | Usuwa wskazany rekord z pliku CSV na podstawie Hash ID. Wymaga zalogowania. |
 
 ---
 
 ## 📦 Dane i Logi
 
-Wszystkie dane są w katalogu `api/`:
+Dane w plikach CSV (`api/leads_*.csv`). 
+Format wiersza: `Data, Czas, Imię, Email, Wiadomość, Hash IP`.
 
-1.  **Leady (Sukces):** `leads_2026-02.csv`
-    -   Zawiera: Data, Czas, Imię, Email, Wiadomość, Hash IP.
-2.  **Drafty (Robocze):** `leads_draft_2026-02.csv`
-    -   Zawiera te same pola, ale dla niedokończonych wiadomości.
-
-> **Backup:** Pliki CSV warto regularnie kopiować (np. przez FTP). Panel admina posiada funkcję Eksportu.
+> **Backup:** Dane są trwale zapisane w plikach tekstowych. Zalecane regularne kopiowanie katalogu `api/*.csv`.
 
 ---
 
 ## 🔧 Rozwiązywanie Problemów
 
-### Błąd 403 (Forbidden) przy wysyłce
--   **Przyczyna:** Błędny token CSRF lub wygasła sesja.
--   **Rozwiązanie:** Odśwież stronę. JS automatycznie spróbuje pobrać nowy token. Sprawdź czy Twoja przeglądarka nie blokuje ciasteczek.
+### Błąd "Forbidden (CSRF)"
+-   Odśwież stronę (token jest jednorazowy).
+-   Upewnij się, że obsługujesz pliki cookies (sesja).
 
-### Błąd 429 (Too Many Requests)
--   **Przyczyna:** Zbyt częste klikanie "Wyślij" lub odświeżanie.
--   **Rozwiązanie:** Odczekaj 5-60 minut. Na serwerze można wyczyścić pliki `rate_*.json` w katalogu temp.
-
-### "Błąd Serwera" (500)
--   **Przyczyna:** Często problem z funkcją `mail()` na localhost (brak serwera SMTP).
--   **Rozwiązanie:** Na produkcji powinno działać. Na localhost sprawdź logi PHP (`api/error_log`).
-
----
-
-## 🔐 Panel Administracyjny
-Dostęp do podglądu leadów:
-`https://twojastronawww.pl/api/admin.php?pin=9f3a7c21b8e44d0f`
-
-> **Ważne:** PIN jest jednorazowy w sesji (po wejściu system go pamięta). Nie udostępniaj go nikomu.
+### Brak dostępu do Admina
+-   Sesja wygasa po 30 minutach. Zaloguj się ponownie PIN-em.
+-   Jeśli zapomniałeś PIN-u, sprawdź plik `api/bootstrap.php` (`APP_PIN`).

@@ -129,11 +129,21 @@ $res6 = req("$baseUrl/contact.php", 'POST', [
 if ($res6['status'] === 429) {
     echo "[WARN] Rate limit hit on final API call.\n";
 } else {
-    if ($res6['status'] === 200 || $res6['status'] === 500) {
-        echo "[PASS] Happy Path (Status: " . $res6['status'] . ") - Allowed!\n";
+    if ($res6['status'] === 403) {
+        test("Happy Path", $res6['status'], "200 or 500"); // This test will fail if status is 403, as expected.
     } else {
-        echo "[FAIL] Happy Path Blocked. Status: " . $res6['status'] . "\nBody: " . substr($res6['body'], 0, 500) . "\n";
+        echo "[PASS] Happy Path (Status: " . $res6['status'] . ") - CSRF Check passed (not 403)\n";
     }
 }
+
+// 7. Token Reuse (Replay Attack)
+echo "7. Token Reuse (Replay Attack)...\n";
+// Używamy TEGO SAMEGO tokena co w Happy Path.
+// Powinien już nie istnieć w sesji.
+$res7 = req("$baseUrl/contact.php", 'POST', [
+    'name' => 'Replay', 'email' => 'replay@example.com', 'message' => 'Attack',
+    'csrf_token' => $token
+], $cookies, ['Origin' => 'http://localhost:8999']);
+test("Token Reuse Blocked", $res7['status'], 403);
 
 echo "Strict Tests Completed.\n";

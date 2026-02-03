@@ -27,7 +27,7 @@ function initContactForm() {
     
     // Autosave / Lead Recovery Variables
     let autosaveTimer;
-    const AUTOSAVE_DELAY = 15 * 60 * 1000; // 15 minutes
+    const AUTOSAVE_DELAY = 60 * 1000; // 60 seconds
 
     const inputs = form.querySelectorAll('input, textarea');
     const btn = form.querySelector('button[type="submit"]');

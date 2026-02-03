@@ -20,5 +20,12 @@ function csrf_check(?string $token): bool {
         return false;
     }
     
-    return hash_equals($_SESSION['csrf_token'], $token);
+    $result = hash_equals($_SESSION['csrf_token'], $token);
+    
+    // One-Time Token: Jeśli weryfikacja się powiodła, usuwamy token (rotacja)
+    if ($result) {
+        unset($_SESSION['csrf_token']);
+    }
+    
+    return $result;
 }

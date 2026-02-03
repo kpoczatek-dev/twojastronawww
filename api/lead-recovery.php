@@ -9,15 +9,7 @@ if (!rate_limit('lead_draft_' . md5($ip), 20, 3600)) {
     exit;
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
-if (!is_array($data)) {
-    $data = $_POST;
-}
-
-if (!empty($data['website_url'])) {
-    echo json_encode(['status' => 'ok']);
-    exit;
-}
+$data = get_json_request();
 
 $name = trim(strip_tags($data['name'] ?? ''));
 $email = trim($data['email'] ?? '');
