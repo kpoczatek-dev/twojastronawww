@@ -1,8 +1,9 @@
 // Contact Form Logic
+const API_BASE = '/api/';
 let CSRF_TOKEN = '';
 
 // 1. Pobranie tokena CSRF na starcie
-fetch('api/csrf.php', { credentials: 'same-origin' })
+fetch(API_BASE + 'csrf.php', { credentials: 'same-origin' })
     .then(r => r.json())
     .then(d => {
         CSRF_TOKEN = d.token;
@@ -52,7 +53,7 @@ function initContactForm() {
         if (isUnload && navigator.sendBeacon) {
             const params = new URLSearchParams(data);
             navigator.sendBeacon(
-                'api/lead-recovery.php',
+                API_BASE + 'lead-recovery.php',
                 params
             );
             return;
@@ -60,7 +61,7 @@ function initContactForm() {
 
         console.log('Sending draft (Lead Recovery)...');
         // UPDATE: fetch from api/lead-recovery.php
-        fetch('api/lead-recovery.php', {
+        fetch(API_BASE + 'lead-recovery.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
@@ -113,7 +114,7 @@ function initContactForm() {
 
         try {
             // UPDATE: fetch from api/contact.php
-            const response = await fetch('api/contact.php', {
+            const response = await fetch(API_BASE + 'contact.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'same-origin',
