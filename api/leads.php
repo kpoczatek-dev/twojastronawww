@@ -1,5 +1,7 @@
 <?php
 session_start();
+ini_set('auto_detect_line_endings', true); // Fix dla Mac/Linux CSV
+
 // ====== MINIMALNA OCHRONA (SESJA) ======
 $PIN = '9f3a7c21b8e44d0f'; // Bezpieczny PIN
 
@@ -28,7 +30,7 @@ foreach ($files as $file) {
         while (($data = fgetcsv($handle)) !== FALSE) {
             // Format CSV: date, time, name, email, message, ip_hash
             // Chcemy wyświetlić np. Email, Date, Name
-            if (count($data) >= 6) {
+            if (count($data) === 6) {
                 $leads[] = [
                     'date' => $data[0] . ' ' . $data[1],
                     'name' => $data[2],
