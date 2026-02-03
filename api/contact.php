@@ -22,6 +22,12 @@ if (!empty($data['website_url'])) {
 }
 
 // CSRF
+if (!isset($_SESSION['csrf_token'])) {
+    error_log('[DEBUG] CSRF ERROR: $_SESSION["csrf_token"] is missing! Session ID: ' . session_id());
+} else {
+    error_log('[DEBUG] CSRF CHECK: Session token: ' . $_SESSION['csrf_token'] . ' vs Input: ' . ($data['csrf'] ?? 'NULL'));
+}
+
 if (!csrf_check($data['csrf'] ?? null)) {
     http_response_code(403);
     echo json_encode(["status" => "error", "message" => "Błąd CSRF."]);
