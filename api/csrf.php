@@ -15,11 +15,12 @@ function csrf_token(): string {
         
         // Zgodnie z sugestią użytkownika (Option 1):
         setcookie('csrf_token', $token, [
-            'expires' => time() + 3600,
-            'path' => '/',
+            'expires'  => time() + 3600,
+            'path'     => '/',
+            'domain'   => '.twojastronawww.pl',
+            'secure'   => true,
+            'httponly' => true,
             'samesite' => 'Lax',
-            'secure' => true,
-            'httponly' => true
         ]);
         return $token;
     }

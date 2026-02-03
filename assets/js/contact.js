@@ -1,33 +1,6 @@
 // Contact Form Logic
 const API_BASE = '/api/';
-let CSRF_TOKEN = '';
-
-let csrfPromise = null;
-function loadCsrfToken() {
-    if (CSRF_TOKEN) return Promise.resolve(CSRF_TOKEN);
-    if (csrfPromise) return csrfPromise;
-
-    csrfPromise = fetch(API_BASE + 'get-csrf-token.php', {
-        credentials: 'same-origin',
-        cache: 'no-store'
-    })
-        .then(r => r.json())
-        .then(d => {
-            CSRF_TOKEN = d.token || '';
-            console.log('CSRF Token loaded');
-            return CSRF_TOKEN;
-        })
-        .catch(err => {
-            console.error('CSRF Error:', err);
-            CSRF_TOKEN = '';
-            return '';
-        })
-        .finally(() => {
-            csrfPromise = null;
-        });
-
-    return csrfPromise;
-}
+// 1. CSRF usunięty (formularz publiczny)
 
 // 1. loadCsrfToken usuwamy ze startu (lazy loading w submit)
 
@@ -120,26 +93,7 @@ function initContactForm() {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
         
-        // Optymalizacja: ZAWSZE upewniamy się o token tutaj, eliminując wyścig przy starcie
-        await loadCsrfToken();
-        data.csrf = CSRF_TOKEN; // Add CSRF token
-
-        // Client-side Honeypot Check
-        if (data.website_url) {
-            console.warn('Bot detected via honeypot.');
-            return; // Silently fail
-        }
-
-        const btn = form.querySelector('button[type="submit"]');
-        const originalBtnText = btn.textContent;
-        btn.textContent = 'Wysyłanie...';
-        btn.disabled = true;
-
         try {
-            if (!data.csrf) {
-                showError('Błąd CSRF. Odśwież stronę i spróbuj ponownie.');
-                return;
-            }
             // UPDATE: fetch from api/contact.php
             const response = await fetch(API_BASE + 'contact.php', {
                 method: 'POST',

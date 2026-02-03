@@ -24,4 +24,3 @@ define('APP_PIN', '9f3a7c21b8e44d0f');
 
 require_once __DIR__ . '/rate-limit.php';
 require_once __DIR__ . '/leads-store.php';
-require_once __DIR__ . '/csrf.php';

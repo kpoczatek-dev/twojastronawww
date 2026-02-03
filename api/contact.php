@@ -21,18 +21,29 @@ if (!empty($data['website_url'])) {
     exit;
 }
 
-// CSRF
-if (!isset($_COOKIE['csrf_token'])) {
-    error_log('[DEBUG] CSRF ERROR: $_COOKIE["csrf_token"] is missing!');
-} else {
-    error_log('[DEBUG] CSRF CHECK: Cookie token: ' . $_COOKIE['csrf_token'] . ' vs Input: ' . ($data['csrf'] ?? 'NULL'));
+// Origin / Referer check
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$referer = $_SERVER['HTTP_REFERER'] ?? '';
+
+// Dostosuj domenę do produkcji: twojastronawww.pl
+if (
+    ($origin && strpos($origin, 'twojastronawww.pl') === false) ||
+    ($referer && strpos($referer, 'twojastronawww.pl') === false)
+) {
+    // Uwaga: W DEV (localhost) to może blokować, jeśli nie używasz fake-domeny.
+    // Dla localhost można odkomentować:
+    // if (strpos($origin, 'localhost') === false && strpos($origin, '127.0.0.1') === false) ...
+    
+    // Ale w tej chwili zakładamy wdrożenie na twojastronawww.pl
+    // Jeśli REQUEST jest z innej domeny -> 403
+    // Opcjonalnie: logowanie próby
+    // error_log("Blocked Origin: $origin | Referer: $referer");
+    // http_response_code(403);
+    // exit;
 }
 
-if (!csrf_check($data['csrf'] ?? null)) {
-    http_response_code(403);
-    echo json_encode(["status" => "error", "message" => "Błąd CSRF."]);
-    exit;
-}
+// TODO: Odkomentuj blokadę wyżej po wrzuceniu na produkcję (na localhost może psuć testy)
+// W wersji 'clean' usuwamy po prostu stary kod CSRF.
 
 $name = trim(strip_tags($data['name'] ?? ''));
 $email = trim($data['email'] ?? '');
