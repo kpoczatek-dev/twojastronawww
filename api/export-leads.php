@@ -1,4 +1,5 @@
 session_start();
+ini_set('auto_detect_line_endings', true); // Fix dla Mac/Linux CSV
 $PIN = '9f3a7c21b8e44d0f';
 
 // Dostęp z sesji LUB bezpośrednio z PIN (dla API)
