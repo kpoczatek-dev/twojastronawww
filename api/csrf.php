@@ -17,9 +17,9 @@ function csrf_token(): string {
         setcookie('csrf_token', $token, [
             'expires' => time() + 3600,
             'path' => '/',
-            'samesite' => 'Strict',
+            'samesite' => 'Lax',
             'secure' => true,
-            'httponly' => true // Bezpieczniej, JS dostanie go w JSON
+            'httponly' => true
         ]);
         return $token;
     }
