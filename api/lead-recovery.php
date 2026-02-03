@@ -1,4 +1,5 @@
 <?php
+file_put_contents(__DIR__ . '/DEBUG_TOP.txt', date('c') . PHP_EOL, FILE_APPEND);
 session_start();
 header("Content-Type: application/json; charset=UTF-8");
 
