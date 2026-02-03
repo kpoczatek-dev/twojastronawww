@@ -4,6 +4,7 @@ header("Content-Type: application/json; charset=UTF-8");
 
 $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 // Limit: 5 prób wysyłki na 5 minut
+// Limit: 5 prób wysyłki na 5 minut
 if (!rate_limit('contact_' . md5($ip), 5, 300)) {
     http_response_code(429);
     echo json_encode(["status" => "error", "message" => "Za dużo prób."]);
@@ -25,25 +26,30 @@ if (!empty($data['website_url'])) {
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $referer = $_SERVER['HTTP_REFERER'] ?? '';
 
-// Dostosuj domenę do produkcji: twojastronawww.pl
-if (
-    ($origin && strpos($origin, 'twojastronawww.pl') === false) ||
-    ($referer && strpos($referer, 'twojastronawww.pl') === false)
-) {
-    // Uwaga: W DEV (localhost) to może blokować, jeśli nie używasz fake-domeny.
-    // Dla localhost można odkomentować:
-    // if (strpos($origin, 'localhost') === false && strpos($origin, '127.0.0.1') === false) ...
-    
-    // Ale w tej chwili zakładamy wdrożenie na twojastronawww.pl
-    // Jeśli REQUEST jest z innej domeny -> 403
-    // Opcjonalnie: logowanie próby
-    // error_log("Blocked Origin: $origin | Referer: $referer");
-    // http_response_code(403);
-    // exit;
+// Dynamiczne sprawdzanie domeny (Localhost + Produkcja)
+$allowedDomains = ['twojastronawww.pl', 'localhost', '127.0.0.1'];
+$isAllowed = false;
+
+foreach ($allowedDomains as $domain) {
+    if (strpos($origin, $domain) !== false || strpos($referer, $domain) !== false) {
+        $isAllowed = true;
+        break;
+    }
 }
 
-// TODO: Odkomentuj blokadę wyżej po wrzuceniu na produkcję (na localhost może psuć testy)
-// W wersji 'clean' usuwamy po prostu stary kod CSRF.
+if (!$isAllowed && ($origin || $referer)) {
+    // Blokujemy tylko jeśli przesłano nagłówki Origin/Referer i nie pasują
+    http_response_code(403);
+    echo json_encode(["status" => "error", "message" => "Forbidden Origin"]);
+    exit;
+}
+
+// CSRF Check
+if (!csrf_check($data['csrf_token'] ?? '')) {
+    http_response_code(403);
+    echo json_encode(["status" => "error", "message" => "Błąd zabezpieczeń (CSRF). Odśwież stronę."]);
+    exit;
+}
 
 $name = trim(strip_tags($data['name'] ?? ''));
 $email = trim($data['email'] ?? '');

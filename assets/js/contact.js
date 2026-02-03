@@ -1,12 +1,26 @@
 // Contact Form Logic
 const API_BASE = '/api/';
-// 1. CSRF usunięty (formularz publiczny)
+let CSRF_TOKEN = '';
 
-// 1. loadCsrfToken usuwamy ze startu (lazy loading w submit)
+async function loadCsrfToken() {
+    try {
+        const response = await fetch(API_BASE + 'get-csrf-token.php');
+        const data = await response.json();
+        if (data && data.token) {
+            CSRF_TOKEN = data.token;
+            console.log('CSRF Token loaded.');
+        }
+    } catch (e) {
+        console.error('Error loading CSRF token:', e);
+    }
+}
 
 function initContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) return;
+
+    // Load Token immediately
+    loadCsrfToken();
 
     const errorDiv = document.getElementById('formErrors');
     const successMsg = document.getElementById('formSuccess');
@@ -16,29 +30,36 @@ function initContactForm() {
     const AUTOSAVE_DELAY = 15 * 60 * 1000; // 15 minutes
 
     const inputs = form.querySelectorAll('input, textarea');
+    const btn = form.querySelector('button[type="submit"]');
+    const originalBtnText = btn ? btn.textContent : 'Wyślij';
 
     // Helper to clear error
     function clearError() {
-        errorDiv.style.display = 'none';
-        errorDiv.textContent = '';
+        if(errorDiv) {
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+        }
     }
 
     // Helper to show error
     function showError(msg) {
-        errorDiv.style.display = 'block';
-        errorDiv.textContent = msg;
+        if(errorDiv) {
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = msg;
+        } else {
+            alert(msg);
+        }
     }
 
     // Lead Recovery: Send Draft
     function sendDraft(isUnload = false) {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        // data.csrf = CSRF_TOKEN; // Drafty nie wymagają CSRF (i tak nie jest sprawdzany)
+        // Add CSRF to draft? Not strictly enforced yet but good practice
+        if (CSRF_TOKEN) data.csrf_token = CSRF_TOKEN;
         
         // Only send if there's at least an email or phone/name so we know who it is
         if (!data.email && !data.name) return;
-
-        // Nie wysyłamy type: 'lead_recovery', bo endpoint jest dedykowany
 
         const payload = JSON.stringify(data);
 
@@ -53,7 +74,6 @@ function initContactForm() {
         }
 
         console.log('Sending draft (Lead Recovery)...');
-        // UPDATE: fetch from api/lead-recovery.php
         fetch(API_BASE + 'lead-recovery.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -88,13 +108,24 @@ function initContactForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         clearError();
-        successMsg.style.display = 'none';
+        if(successMsg) successMsg.style.display = 'none';
+        
+        if (btn) {
+            btn.textContent = 'Wysyłanie...';
+            btn.disabled = true;
+        }
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
         
+        // Append CSRF
+        if (CSRF_TOKEN) {
+            data.csrf_token = CSRF_TOKEN;
+        } else {
+            console.warn('Submitting without CSRF token (fetch failed?)');
+        }
+
         try {
-            // UPDATE: fetch from api/contact.php
             const response = await fetch(API_BASE + 'contact.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -106,19 +137,29 @@ function initContactForm() {
             const result = await response.json().catch(() => ({ status: 'error', message: 'Błąd serwera.' }));
 
             if (response.ok && result.status === 'success') {
-                successMsg.style.display = 'block';
-                successMsg.textContent = result.message;
+                if(successMsg) {
+                    successMsg.style.display = 'block';
+                    successMsg.textContent = result.message || 'Wiadomość wysłana!';
+                } else {
+                    alert(result.message || 'Wiadomość wysłana!');
+                }
                 form.reset();
                 clearTimeout(autosaveTimer); // Cancel draft if sent
+                // Refresh token for next send (if needed, though single use usually fine for contact)
+                loadCsrfToken(); 
             } else {
                 showError(result.message || 'Wystąpił błąd. Spróbuj ponownie.');
+                // Refetch token if it was invalid
+                if (response.status === 403) loadCsrfToken();
             }
         } catch (error) {
             console.error(error);
             showError('Błąd połączenia. Sprawdź internet.');
         } finally {
-            btn.textContent = originalBtnText;
-            btn.disabled = false;
+            if (btn) {
+                btn.textContent = originalBtnText;
+                btn.disabled = false;
+            }
         }
     });
 }

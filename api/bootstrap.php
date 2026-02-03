@@ -13,7 +13,7 @@ ini_set('session.gc_maxlifetime', '3600'); // 1h ważności sesji
 
 session_start();
 
-ini_set('auto_detect_line_endings', '1');
+// ini_set('auto_detect_line_endings', '1'); // Deprecated in PHP 8.1+
 
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
@@ -24,3 +24,4 @@ define('APP_PIN', '9f3a7c21b8e44d0f');
 
 require_once __DIR__ . '/rate-limit.php';
 require_once __DIR__ . '/leads-store.php';
+require_once __DIR__ . '/csrf.php';
