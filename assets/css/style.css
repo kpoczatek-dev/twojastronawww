@@ -14,7 +14,11 @@
     --font-main: 'Space Grotesk', sans-serif;
     --font-mono: 'Fira Code', monospace;
     --transition-speed: 0.3s;
+    
+    --header-height: 96px; /* Reduced as requested */
 }
+
+
 
 * {
     box-sizing: border-box;
@@ -28,8 +32,8 @@ body {
     
     /* Technical Grid Background */
     background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
     background-size: 40px 40px;
     background-position: center top;
     
@@ -59,6 +63,24 @@ ul {
     padding: 0 24px;
 }
 
+/* Helper Classes (Replacing Inline Styles) */
+.mt-20 { margin-top: 20px; }
+.mt-40 { margin-top: 40px; }
+.mb-20 { margin-bottom: 20px; }
+
+.text-center { text-align: center; }
+.max-w-800 { max-width: 800px; margin-left: auto; margin-right: auto; }
+
+.features--no-bottom {
+    padding-bottom: 0 !important;
+}
+
+.btn-sm {
+    font-size: 0.8rem;
+    padding: 8px 16px;
+    margin-top: 20px;
+}
+
 /* Animations */
 @keyframes fadeInUp {
     from {
@@ -77,15 +99,15 @@ ul {
     100% { background-position: 0% 50%; }
 }
 
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-}
 
-/* Header */
+
+/* Mobile default for Header */
 header {
-    padding: 20px 0;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    padding: 0;
+    
     position: fixed;
     width: 100%;
     top: 0;
@@ -96,24 +118,34 @@ header {
     border-bottom: 1px solid var(--glass-border);
 }
 
-nav .container {
+nav.container {
+    height: 100%;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column; /* Stack logo above links */
+    justify-content: center;
+    align-items: flex-start; /* Align Left */
+    gap: 0; /* No gap at all */
+    
+    /* User request: Move left 50%, but nudge right */
+    max-width: 60%; /* Slightly more space */
+    margin-left: 15%; /* Move further right */
+    margin-right: auto;
 }
 
 .logo {
-    font-size: 1.5rem;
+    font-size: 1.8rem; /* Larger logo */
     font-weight: 800;
+    line-height: 1; /* Tighten line height to remove vertical space */
     letter-spacing: -0.03em;
     background: linear-gradient(to right, #fff, var(--primary-color));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    margin-bottom: 4px; /* Tiny adjustment */
 }
 
 .nav-links {
-    display: flex;
+    display: none; /* In production, add a mobile menu hamburger */
     gap: 32px;
 }
 
@@ -127,6 +159,35 @@ nav .container {
     color: #fff;
 }
 
+/* Tablet + Desktop */
+@media (min-width: 768px) {
+    /* Header height is fixed in base, padding removed. */
+
+    .logo {
+        font-size: 1.5rem;
+    }
+
+    .nav-links {
+        display: flex;
+    }
+    
+    .nav-toggle {
+        display: none;
+    }
+}
+
+/* Helper Classes (Replacing Inline Styles) */
+/* ... */
+
+.nav-toggle {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px; /* Bigger touch target */
+}
+
 /* Hero Section */
 .hero {
     min-height: 100vh;
@@ -135,7 +196,8 @@ nav .container {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 120px 0 80px;
+    padding-top: calc(var(--header-height) + 40px);
+    padding-bottom: 80px;
     position: relative;
 }
 
@@ -152,129 +214,13 @@ nav .container {
     pointer-events: none;
 }
 
-/* Terminal Window Container for Sliding */
-/* Terminal Window Container for Sliding */
-.terminal-scene {
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto 40px;
-    display: grid;
-    grid-template-columns: 1fr 0fr; /* Start with second terminal collapsed */
-    gap: 0;
-    transition: grid-template-columns 1s cubic-bezier(0.25, 1, 0.5, 1), gap 1s ease;
-}
 
-/* State: When both are visible */
-.terminal-scene.dual-mode {
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-/* Removed terminal-slider, using direct flex manipulation */
-
-.terminal-window {
-    background: #0f172a;
-    border-radius: 10px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.1);
-    
-    /* Animation props */
-    width: 100%;
-    min-width: 0; /* Allow shrinking in grid */
-    height: 380px; 
-    
-    display: flex;
-    flex-direction: column;
-    font-family: var(--font-mono);
-    text-align: left;
-    overflow: hidden;
-    position: relative; 
-}
-
-/* State: When the second terminal is hidden - REMOVED, handled by grid 0fr */
-/* .terminal-window.collapsed { ... } */
-
-/* State: When both are visible - REMOVED, handled by grid */
-/* .terminal-scene.dual-mode .terminal-window { ... } */
-
-/* Mobile responsive */
-@media (max-width: 768px) {
-    .terminal-scene {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    }
-    
-    .terminal-scene.dual-mode {
-        display: flex; /* Override grid on mobile */
-    }
-
-    .terminal-window {
-        max-width: 100%;
-        margin-bottom: 20px;
-    }
-
-
-    /* Hide second terminal initially on mobile */
-    .terminal-scene:not(.dual-mode) #term2 {
-        display: none;
-    }
-}
-
-/* Fading lines */
-.history-line {
-    margin-bottom: 5px;
-    transition: opacity 0.5s;
-    white-space: pre-wrap; /* Allow wrapping instead of horizontal scroll */
-    word-break: break-word; /* Fix: changed from break-work to break-word */
-    overflow-x: hidden; /* Prevent horizontal scroll */
-}
 
 /* ... header styles ... */
 
-.terminal-body {
-    padding: 20px;
-    min-height: 200px;
-    color: #33ff00;
-    font-size: 1.1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-start;
-    cursor: text;
-    position: relative;
-}
 
-/* Shared Terminal Input */
-.terminal-input {
-    background: transparent !important; /* Force transparency */
-    background-color: transparent !important;
-    border: none;
-    color: #fff;
-    font-family: var(--font-mono);
-    font-size: 1.1rem;
-    outline: none;
-    flex: 1;
-    min-width: 150px;
-    caret-color: #27c93f;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-}
 
-/* Location Tags */
-.location-tag {
-    display: inline-block;
-    font-size: 0.75rem;
-    background: rgba(6, 182, 212, 0.1);
-    color: var(--accent-color);
-    padding: 2px 8px;
-    border-radius: 4px;
-    margin-right: 12px;
-    margin-bottom: 0px;
-    border: 1px solid rgba(6, 182, 212, 0.2);
-    font-family: var(--font-mono);
-}
+
 
 /* Pricing Section */
 .pricing-grid {
@@ -348,101 +294,10 @@ nav .container {
     margin-right: 10px;
     font-weight: bold;
 }
-.terminal-header {
-    background: rgba(255,255,255,0.05);
-    padding: 10px 15px;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
 
-.buttons {
-    display: flex;
-    gap: 8px;
-}
-
-.buttons span {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    display: inline-block;
-    background: rgba(255,255,255,0.2); /* Neutral/Linux style */
-}
-
-/* Remove iOS colors */
-/*.close { background: #ff5f56; }
-.minimize { background: #ffbd2e; }
-.maximize { background: #27c93f; }*/
-
-.title {
-    margin-left: 15px; /* Right of buttons */
-    /* margin: 0 auto; Removed centering */
-    color: rgba(255,255,255,0.4);
-    font-size: 0.85rem;
-    font-family: var(--font-mono);
-    font-weight: 600;
-}
-
-.terminal-body {
-    padding: 20px;
-    flex: 1; /* Fill remaining height */
-    overflow-y: auto; /* Enable scrolling */
-    color: #33ff00;
-    font-size: 1.1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Start content from top to allow scrolling properly */
-    align-items: flex-start;
-    cursor: text;
-    position: relative;
-    scroll-behavior: smooth;
-}
-
-/* Custom Scrollbar for Terminal */
-.terminal-body::-webkit-scrollbar {
-    width: 6px;
-}
-.terminal-body::-webkit-scrollbar-track {
-    background: transparent;
-}
-.terminal-body::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
-}
-.terminal-body::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-#terminal-history {
-    width: 100%;
-    margin-bottom: 5px;
-}
-
-.history-line {
-    margin-bottom: 5px;
-    opacity: 0.7;
-}
-
-.command-line {
-    display: flex;
-    white-space: pre-wrap;
-    width: 100%;
-}
-
-.prompt {
-    color: #06b6d4;
-    margin-right: 10px;
-}
-
-.cursor {
-    animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-    50% { opacity: 0; }
-}
 
 .hero h1 {
-    font-size: 3.5rem;
+    font-size: 2.4rem; /* Mobile First */
     line-height: 1.1;
     margin-bottom: 24px;
     font-weight: 700;
@@ -454,17 +309,29 @@ nav .container {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: gradientText 6s ease infinite, fadeInUp 0.8s ease-out 0.2s backwards;
+    animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+@media (min-width: 768px) {
+    .hero h1 {
+        font-size: 3.5rem;
+    }
 }
 
 .hero p {
-    font-size: 1.25rem;
+    font-size: 1.1rem; /* Mobile First */
     color: var(--text-muted);
     margin-bottom: 48px;
     max-width: 640px;
     margin-left: auto;
     margin-right: auto;
     animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+@media (min-width: 768px) {
+    .hero p {
+        font-size: 1.25rem;
+    }
 }
 
 .hero-btns {
@@ -515,9 +382,15 @@ nav .container {
 
 /* Features Section */
 .features {
-    padding: 120px 0;
+    padding: 80px 0; /* Mobile First */
     position: relative;
     z-index: 1;
+}
+
+@media (min-width: 768px) {
+    .features {
+        padding: 120px 0;
+    }
 }
 
 #benefits {
@@ -555,15 +428,16 @@ nav .container {
     transition: transform 0.3s, border-color 0.3s, background 0.3s;
     height: 100%;
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column; /* Mobile First: Column */
+    align-items: flex-start;
+    flex-wrap: wrap; /* Keep wrap just in case, though column usually doesn't need it */
     align-content: flex-start;
     text-align: left;
 }
 
 /* Desktop Grid Overrides */
 @media (min-width: 1024px) {
+    /* ... existing grid overrides ... */
     /* Why Us: 8 items -> 4 columns = 2 rows */
     #features .features-grid {
         grid-template-columns: repeat(4, 1fr);
@@ -574,25 +448,36 @@ nav .container {
         grid-template-columns: repeat(3, 1fr);
     }
 
-    /* Portfolio: 4 items -> 2 columns = 2 rows
-       Constrain width to ~700px so cards are roughly same size as the 4-col layout above */
+    /* Portfolio: 4 items -> 2 columns = 2 rows */
     #portfolio .features-grid {
         grid-template-columns: repeat(2, 1fr);
-        /* MAX-WIDTH REMOVED to stretch full container width */
-        /* max-width: 700px; */
-        /* margin: 0 auto; */
+    }
+}
+
+/* Tablet/Desktop Card Layout Override */
+@media (min-width: 768px) {
+    .feature-card {
+        flex-direction: row;
+        align-items: center;
     }
 }
 
 
 .feature-card .icon {
     font-size: 2.5rem;
-    margin-bottom: 0;
-    margin-right: 16px;
+    margin-bottom: 16px; /* Mobile: spacing below icon */
+    margin-right: 0;
     width: auto;
     /* Neon Blue Theme */
     filter: grayscale(100%) sepia(100%) hue-rotate(180deg) saturate(300%) drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
     transition: transform 0.3s;
+}
+
+@media (min-width: 768px) {
+    .feature-card .icon {
+        margin-bottom: 0;
+        margin-right: 16px;
+    }
 }
 
 .feature-card h3 {
@@ -639,20 +524,20 @@ nav .container {
     flex-grow: 1; /* Push any bottom content down if needed */
 }
 
-/* Sticky Call Button */
+/* Sticky Call Button (Mobile First) */
 .sticky-call-btn {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
     background: var(--primary-color);
     color: #000;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
+    font-size: 20px;
     box-shadow: 0 0 20px rgba(0,255,136, 0.4);
     z-index: 1000;
     transition: transform 0.3s, box-shadow 0.3s;
@@ -665,149 +550,36 @@ nav .container {
     box-shadow: 0 0 30px rgba(0,255,136, 0.6);
 }
 
-@media (max-width: 768px) {
+/* Hide on Desktop */
+@media (min-width: 769px) {
     .sticky-call-btn {
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
+        display: none;
     }
 }
 
-.section-cta {
-    margin-top: 60px;
-    text-align: center;
-}
+/* Mobile responsive */
 
-/* Stats Section */
-.stats {
-    padding: 80px 0;
-    background: rgba(2, 6, 23, 0.8);
-    border-top: 1px solid var(--glass-border);
-    border-bottom: 1px solid var(--glass-border);
-}
-
-.stats-grid {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 40px;
-    text-align: center;
-}
-
-.stat-item h3 {
-    font-size: 3.5rem;
-    font-weight: 800;
-    background: linear-gradient(to right, var(--primary-color), var(--accent-color));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 10px;
-}
-
-.stat-item p {
-    color: var(--text-muted);
-    font-size: 1.1rem;
-    font-weight: 500;
-}
-
-/* Tech Stack */
-.tech-stack {
-    padding: 60px 0;
-    text-align: center;
-    overflow: hidden;
-}
-
-.tech-grid {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 40px;
-    flex-wrap: wrap;
-    opacity: 0.7;
-}
-
-.tech-item {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    padding: 10px 20px;
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    background: rgba(255,255,255,0.03);
-    transition: all 0.3s;
-    position: relative; /* For tooltip positioning */
-    cursor: help;
-}
-
-.tech-item:hover {
-    color: white;
-    background: rgba(255,255,255,0.1);
-    transform: translateY(-2px);
-    border-color: rgba(59, 130, 246, 0.3);
-}
-
-/* Tech Description Area */
-.tech-description {
-    min-height: 30px; /* Prevent layout shift */
-    margin-top: 40px;
-    font-size: 1.1rem;
-    color: var(--accent-color);
-    font-weight: 500;
-    text-align: center;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    transition: all 0.3s ease;
-    opacity: 0.8;
-}
-
-.tech-description.active {
-    opacity: 1;
-    color: #fff;
-    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-}
 
 /* Contact / Footer */
 footer {
     padding: 60px 0;
     text-align: center;
     border-top: 1px solid var(--glass-border);
-    background: rgba(2, 6, 23, 0.5);
-    color: var(--secondary-color);
+    background: var(--glass-bg); /* Consistent glass background */
+    color: var(--text-muted); /* Consistent muted text */
     font-size: 0.9rem;
 }
 
 .footer-link {
-    font-size: 0.9em;
-    text-decoration: underline;
-    opacity: 0.8;
-    transition: opacity 0.3s ease;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.3s;
+    margin-top: 8px;
+    display: inline-block;
 }
 
 .footer-link:hover {
-    opacity: 1;
+    color: var(--primary-color);
+    text-decoration: underline;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2.8rem;
-    }
-    
-    .nav-links {
-        display: none; /* In production, add a mobile menu hamburger */
-    }
-    
-    .hero-btns {
-        flex-direction: column;
-        align-items: stretch;
-        max-width: 300px;
-        margin: 0 auto;
-    }
-    
-    .container {
-        padding: 0 20px;
-    }
-}

@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TwojaStronaWWW - Profesjonalne Strony z Własnym Panelem Admin</title>
+    <title>TwojaStronaWWW – Automatyzacja stron i procesów w firmie</title>
     <meta name="description"
-        content="Tworzymy szybkie, nowoczesne strony internetowe z integracją Git, własnym panelem administracyjnym i systemem odzyskiwania leadów.">
+        content="Automatyzuję strony WWW i procesy w firmach. Tworzę szybkie, lekkie strony i rozwiązania, które zastępują ręczną pracę i obniżają koszty.">
     <meta name="robots" content="index, follow">
     <!-- Favicon -->
     <link rel="icon"
@@ -20,7 +20,8 @@
         rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="assets/css/style.css?v=3">
+
 </head>
 
 <body>
@@ -29,6 +30,10 @@
     <header>
         <nav class="container">
             <a href="#" class="logo">TwojaStronaWWW</a>
+
+            <!-- Mobile Menu Toggle (Placeholder) -->
+            <button class="nav-toggle" aria-label="Menu" onclick="console.log('Toggle menu placeholder')">☰</button>
+
             <div class="nav-links">
                 <a href="#portfolio">Realizacje</a>
 
@@ -43,19 +48,20 @@
     <section class="hero">
         <div class="container">
 
-            <h1 style="margin-top: 40px;">Automatyzuję strony WWW i procesy, które dziś robisz ręcznie w firmie</h1>
-            <p>Tworzę szybkie, lekkie strony i automatyzacje, które pracują za Ciebie - bez ciężkich systemów i zbędnych
+            <h1 class="mt-40">Automatyzuję strony WWW i procesy, które dziś robisz ręcznie w firmie</h1>
+            <p>Tworzę szybkie, lekkie strony i automatyzacje, które zastępują ręczną pracę - bez ciężkich systemów i
+                zbędnych
                 wtyczek.</p>
 
             <div class="hero-btns">
-                <a href="#contact" class="btn btn-primary">Darmowa wycena</a>
+                <a href="#contact" class="btn btn-primary">Zapytaj o wycenę</a>
                 <a href="#portfolio" class="btn btn-secondary">Zobacz, jak to działa</a>
             </div>
         </div>
     </section>
 
     <!-- Benefits Section -->
-    <section id="benefits" class="features" style="padding-bottom: 0;">
+    <section id="benefits" class="features features--no-bottom">
         <div class="container">
             <div class="features-grid">
                 <!-- Feature 1: Data -->
@@ -92,7 +98,7 @@
     <!-- Portfolio Section -->
     <section id="portfolio" class="features" style="background-color: rgba(0,0,0,0.2);">
         <div class="container">
-            <h2 class="section-title">Lokalne Realizacje</h2>
+            <h2 class="section-title">Lokalne realizacje i automatyzacje</h2>
             <div class="features-grid">
 
                 <!-- Project 1: Raricart -->
@@ -101,9 +107,8 @@
                     <h3>Raricart.pl (strona usługowa – eventy)</h3>
                     <span class="location-tag">Zabrze</span>
                     <p>Strona usługowa dla firmy eventowej z czytelną ofertą i sekcjami sprzedażowymi, zaprojektowana
-                        pod generowanie zapytań bez ręcznego kontaktu</p>
-                    <a href="https://test.raricart.pl/" target="_blank" class="btn btn-secondary"
-                        style="margin-top: 20px; font-size: 0.8rem; padding: 8px 16px;">Zobacz Live</a>
+                        pod generowanie zapytań bez ręcznego kontaktu.</p>
+                    <a href="https://test.raricart.pl/" target="_blank" class="btn btn-secondary btn-sm">Zobacz Live</a>
                 </div>
 
                 <!-- Project 2: KatoSalsaHub -->
@@ -113,8 +118,7 @@
                     <span class="location-tag">Katowice</span>
                     <p>Centralne miejsce zautomatyzowanej prezentacji informacji dla społeczności tanecznej. Zamiast
                         rozproszonych postów i ręcznych aktualizacji treści.</p>
-                    <a href="https://katosalsahub.pl/" target="_blank" class="btn btn-secondary"
-                        style="margin-top: 20px; font-size: 0.8rem; padding: 8px 16px;">Zobacz Live</a>
+                    <a href="https://katosalsahub.pl/" target="_blank" class="btn btn-secondary btn-sm">Zobacz Live</a>
                 </div>
 
                 <!-- Project 3: DancePuls -->
@@ -124,8 +128,8 @@
                     <span class="location-tag">Katowice</span>
                     <p>Strona społecznościowo-eventowa z generatorem wydarzeń, który automatyzuje publikację imprez i
                         warsztatów zamiast ręcznego kopiowania danych.</p>
-                    <a href="https://dancepuls.katosalsahub.pl/" target="_blank" class="btn btn-secondary"
-                        style="margin-top: 20px; font-size: 0.8rem; padding: 8px 16px;">Zobacz Live</a>
+                    <a href="https://dancepuls.katosalsahub.pl/" target="_blank" class="btn btn-secondary btn-sm">Zobacz
+                        Live</a>
                 </div>
 
                 <!-- Project 4: FuegoLingua -->
@@ -135,8 +139,7 @@
                     <span class="location-tag">Katowice</span>
                     <p>Lekka strona wizytówkowa uruchomiona bez ciężkich systemów, niskie koszty utrzymania i brak
                         zbędnej administracji.</p>
-                    <a href="https://fuegolingua.pl/" target="_blank" class="btn btn-secondary"
-                        style="margin-top: 20px; font-size: 0.8rem; padding: 8px 16px;">Zobacz Live</a>
+                    <a href="https://fuegolingua.pl/" target="_blank" class="btn btn-secondary btn-sm">Zobacz Live</a>
                 </div>
 
             </div>
@@ -150,7 +153,7 @@
                         automatyzacja może oszczędzić Ci czas i pieniądze.</strong>
                 </p>
                 <div style="margin-top: 40px;">
-                    <a href="#contact" class="btn btn-primary">Darmowa wycena</a>
+                    <a href="#contact" class="btn btn-primary">Zapytaj o wycenę</a>
                 </div>
             </div>
         </div>
@@ -171,7 +174,7 @@
                         <li>Indywidualny Projekt Graficzny</li>
                         <li>Czysty kod bez gotowych szablonów</li>
                         <li>Responsywność (RWD Mobile First)</li>
-                        <li>Podstawowa Optymalizacja SEO</li>
+                        <li>Podstawowa optymalizacja SEO (techniczna)</li>
                         <li>Formularz kontaktowy (gotowy pod automatyzację)</li>
                         <li>Konfiguracja Domeny i SSL</li>
                         <li>Możliwość rozbudowy o automatyzację procesów</li>
@@ -243,7 +246,7 @@
                         style="display: none; color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2); text-align: center;">
                     </div>
 
-                    <input type="text" name="name" placeholder="Imię i Nazwisko"
+                    <input type="text" name="name" placeholder="Imię i nazwisko"
                         style="padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; font-family: var(--font-main);"
                         required>
                     <input type="email" name="email" placeholder="Adres Email"
@@ -268,7 +271,7 @@
     </section>
 
     <!-- Sticky Call Butto;n -->
-    <a href="tel:535050460" class="sticky-call-btn" title="Zadzwoń teraz">
+    <a href="tel:535050460" class="sticky-call-btn" title="Zadzwoń po wstępnych ustaleniach">
         📞
     </a>
 
@@ -280,12 +283,13 @@
     <footer>
         <div class="container">
             <p>&copy; 2026 TwojaStronaWWW. Wszelkie prawa zastrzeżone. <br> <a href="jak-pracuje.html"
-                    style="font-size: 0.9em; text-decoration: underline;">Jak pracuję</a></p>
+                    class="footer-link">Jak pracuję</a></p>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="script.js?v=3"></script>
+    <script src="assets/js/contact.js?v=1"></script>
+    <script src="assets/js/script.js?v=4"></script>
 </body>
 
 </html>

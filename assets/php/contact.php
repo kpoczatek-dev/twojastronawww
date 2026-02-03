@@ -2,7 +2,7 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 
-$toEmail = "poczatek.krzysztof@gmail.com";
+$toEmail = "kontakt@twojastronawww.pl";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
@@ -29,6 +29,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
+    // 1. Limit długości (anty-spam)
+    if (strlen($message) > 5000) {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Wiadomość jest za długa."]);
+        exit;
+    }
+
+    // 2. Walidacja emaila (ostrzejsza)
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Nieprawidłowy email."]);
+        exit;
+    }
+
     $subject = "Formularz Kontaktowy: $name";
     if ($type === 'lead_recovery') {
         $subject = "[SZKIC] Nieukończona wiadomość od: $name";
@@ -38,10 +52,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $emailContent .= "Email: $email\n\n";
     $emailContent .= "Wiadomość:\n$message\n";
     
-    $headers = "From: $email\r\n";
+    $headers = "From: TwojaStronaWWW <kontakt@twojastronawww.pl>\r\n";
     $headers .= "Reply-To: $email\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
     if (mail($toEmail, $subject, $emailContent, $headers)) {
+        // Auto-reply
+        $autoSubject = "Otrzymałem Twoje zapytanie";
+        $autoMessage = "Dzięki za wiadomość.\nWracam z odpowiedzią zwykle w ciągu 24h.\n\nKrzysztof\nTwojaStronaWWW";
+        $autoHeaders = "From: $toEmail\r\n";
+        $autoHeaders .= "Reply-To: $toEmail\r\n";
+        $autoHeaders .= "Content-Type: text/plain; charset=UTF-8\r\n";
+        mail($email, $autoSubject, $autoMessage, $autoHeaders);
+
         echo json_encode(["status" => "success", "message" => "Wysłano pomyślnie."]);
     } else {
         http_response_code(500);
