@@ -42,7 +42,7 @@ if (!$name && !$email) {
 
 $entry = [
     "time" => date("c"),
-    "ip" => hash('sha256', $ip), // RODO: hashujemy IP
+    "ip" => $ip,
     "name" => $name,
     "email" => $email,
     "message" => mb_substr($message, 0, 1000)
@@ -52,6 +52,13 @@ $logDir = __DIR__ . "/../storage";
 if (!is_dir($logDir)) {
     mkdir($logDir, 0755, true);
 }
+
+file_put_contents(
+    "$logDir/leads.log",
+    json_encode($entry) . PHP_EOL,
+    FILE_APPEND
+);
+
 
 file_put_contents(
     "$logDir/leads_" . date('Y-m-d') . ".log", // Rotacja dzienna
