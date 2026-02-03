@@ -36,7 +36,7 @@ function initContactForm() {
     }
 
     // Lead Recovery: Send Draft
-    function sendDraft() {
+    function sendDraft(isUnload = false) {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
         data.csrf = CSRF_TOKEN; // Add CSRF token
@@ -46,13 +46,22 @@ function initContactForm() {
 
         // Nie wysyłamy type: 'lead_recovery', bo endpoint jest dedykowany
 
+        const payload = JSON.stringify(data);
+
+        // 🔥 KLUCZOWE: przy zamknięciu karty
+        if (isUnload && navigator.sendBeacon) {
+            const blob = new Blob([payload], { type: 'application/json' });
+            navigator.sendBeacon('api/lead-recovery.php', blob);
+            return;
+        }
+
         console.log('Sending draft (Lead Recovery)...');
         // UPDATE: fetch from api/lead-recovery.php
         fetch('api/lead-recovery.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
-            body: JSON.stringify(data)
+            body: payload
         }).then(res => res.json())
           .then(res => console.log('Draft saved:', res))
           .catch(err => console.error('Draft save failed:', err));
@@ -74,7 +83,7 @@ function initContactForm() {
     // Lead Recovery on tab close / page hide
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden') {
-            sendDraft();
+            sendDraft(true);
         }
     });
 
