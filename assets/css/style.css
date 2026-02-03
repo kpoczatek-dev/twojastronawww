@@ -3,6 +3,10 @@
     --text-color: #f8fafc;
     --text-muted: #94a3b8;
     
+    /* ============================= */
+    /* THEME / VARIABLES */
+    /* ============================= */
+
     --primary-color: #3b82f6; /* Blue 500 */
     --primary-dark: #1d4ed8;
     --accent-color: #06b6d4; /* Cyan 500 */
@@ -78,7 +82,24 @@ ul {
 .btn-sm {
     font-size: 0.8rem;
     padding: 8px 16px;
-    margin-top: 20px;
+    margin-top: 0; /* Align correctly in nav */
+}
+
+.feature-card .btn {
+    margin-top: 20px; /* Restore spacing in cards */
+}
+
+.bg-glass-darker {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.separator-top {
+    border-top: 1px solid var(--glass-border);
+    margin-top: 80px;
+}
+
+.text-lg {
+    font-size: 1.25rem;
 }
 
 /* Animations */
@@ -101,6 +122,10 @@ ul {
 
 
 
+/* ============================= */
+/* HEADER & NAVIGATION */
+/* ============================= */
+
 /* Mobile default for Header */
 header {
     height: var(--header-height);
@@ -118,63 +143,77 @@ header {
     border-bottom: 1px solid var(--glass-border);
 }
 
-nav.container {
-    height: 100%;
+.nav-inner {
+    width: 100%;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: var(--header-height);
     display: flex;
-    flex-direction: column; /* Stack logo above links */
-    justify-content: center;
-    align-items: flex-start; /* Align Left */
-    gap: 0; /* No gap at all */
-    
-    /* User request: Move left 50%, but nudge right */
-    max-width: 60%; /* Slightly more space */
-    margin-left: 15%; /* Move further right */
-    margin-right: auto;
+    align-items: center;
+    /* justify-content: flex-start; implicit */
+}
+
+/* Left Zone */
+.nav-left {
+    display: flex;
+    align-items: center;
+}
+
+/* Right Zone */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-left: auto; /* Push to the far right */
 }
 
 .logo {
-    font-size: 1.8rem; /* Larger logo */
+    font-size: 1.8rem;
     font-weight: 800;
-    line-height: 1; /* Tighten line height to remove vertical space */
+    line-height: 1;
     letter-spacing: -0.03em;
     background: linear-gradient(to right, #fff, var(--primary-color));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 4px; /* Tiny adjustment */
+    text-decoration: none; /* Ensure no underline on logo link */
 }
 
 .nav-links {
-    display: none; /* In production, add a mobile menu hamburger */
-    gap: 32px;
+    display: none; /* Mobile default */
 }
 
-.nav-links a {
-    font-weight: 500;
-    color: var(--text-muted);
-    font-size: 0.95rem;
-}
-
-.nav-links a:hover {
-    color: #fff;
-}
-
-/* Tablet + Desktop */
+/* Desktop Navigation */
 @media (min-width: 768px) {
-    /* Header height is fixed in base, padding removed. */
-
-    .logo {
-        font-size: 1.5rem;
+    .nav-toggle {
+        display: none; /* Hide toggle on desktop */
     }
 
     .nav-links {
         display: flex;
-    }
-    
-    .nav-toggle {
-        display: none;
+        align-items: center;
+        gap: 32px;
     }
 }
+
+
+.nav-links a:not(.btn) {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: color 0.3s;
+}
+
+.nav-links a:not(.btn):hover {
+    color: #fff;
+}
+
+/* Tablet + Desktop */
+
 
 /* Helper Classes (Replacing Inline Styles) */
 /* ... */
@@ -188,7 +227,10 @@ nav.container {
     padding: 10px; /* Bigger touch target */
 }
 
-/* Hero Section */
+/* ============================= */
+/* HERO SECTION */
+/* ============================= */
+
 .hero {
     min-height: 100vh;
     display: flex;
@@ -222,7 +264,10 @@ nav.container {
 
 
 
-/* Pricing Section */
+/* ============================= */
+/* PRICING & CARDS */
+/* ============================= */
+
 .pricing-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -299,7 +344,7 @@ nav.container {
 .hero h1 {
     font-size: 2.4rem; /* Mobile First */
     line-height: 1.1;
-    margin-bottom: 24px;
+    margin-bottom: 32px; /* Increased from 24px per UX request */
     font-weight: 700;
     letter-spacing: -0.02em;
     
@@ -321,7 +366,7 @@ nav.container {
 .hero p {
     font-size: 1.1rem; /* Mobile First */
     color: var(--text-muted);
-    margin-bottom: 48px;
+    margin-bottom: 56px; /* Increased from 48px per UX request */
     max-width: 640px;
     margin-left: auto;
     margin-right: auto;
@@ -342,7 +387,10 @@ nav.container {
     margin-bottom: 20px; /* Force some spacing, but less than default implicit */
 }
 
-/* Buttons */
+/* ============================= */
+/* BUTTONS & UI COMPONENTS */
+/* ============================= */
+
 .btn {
     display: inline-flex;
     align-items: center;
@@ -380,7 +428,10 @@ nav.container {
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Features Section */
+/* ============================= */
+/* SECTIONS (Features, Benefits) */
+/* ============================= */
+
 .features {
     padding: 80px 0; /* Mobile First */
     position: relative;
@@ -524,7 +575,10 @@ nav.container {
     flex-grow: 1; /* Push any bottom content down if needed */
 }
 
-/* Sticky Call Button (Mobile First) */
+/* ============================= */
+/* STICKY BUTTON */
+/* ============================= */
+
 .sticky-call-btn {
     position: fixed;
     bottom: 20px;
@@ -551,7 +605,7 @@ nav.container {
 }
 
 /* Hide on Desktop */
-@media (min-width: 769px) {
+@media (min-width: 768px) {
     .sticky-call-btn {
         display: none;
     }
@@ -560,7 +614,41 @@ nav.container {
 /* Mobile responsive */
 
 
-/* Contact / Footer */
+/* ============================= */
+/* CTA SECTION */
+/* ============================= */
+
+.section-cta {
+    border-top: 1px solid var(--glass-border);
+    margin-top: 80px;
+    padding-top: 60px;
+    text-align: center;
+}
+
+.section-cta h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.section-cta p {
+    font-size: 1.25rem;
+    max-width: 800px;
+    margin: 0 auto;
+    color: var(--text-muted);
+}
+
+.section-cta strong {
+    color: var(--primary-color);
+}
+
+.section-cta .btn-container {
+    margin-top: 40px;
+}
+
+/* ============================= */
+/* FOOTER */
+/* ============================= */
+
 footer {
     padding: 60px 0;
     text-align: center;
@@ -581,5 +669,69 @@ footer {
 .footer-link:hover {
     color: var(--primary-color);
     text-decoration: underline;
+}
+
+/* Contact Form & Pricing Utilities (Replacing Inline Styles) */
+.contact-wrapper {
+    max-width: 600px;
+    margin: 0 auto 60px;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contact-form input:not([type="submit"]):not([name="website_url"]),
+.contact-form textarea {
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    font-family: var(--font-main);
+    width: 100%;
+}
+
+.pricing-note {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 30px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.pricing-footer {
+    text-align: center;
+    margin-top: 40px;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 30px;
+}
+
+/* Jak Pracuję Page Utilities */
+.hero-mini {
+    min-height: 40vh;
+    padding-top: 120px;
+    padding-bottom: 40px;
+}
+
+.lead-text {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.tech-text {
+    margin-bottom: 30px;
+    color: var(--text-muted);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.8;
 }
 

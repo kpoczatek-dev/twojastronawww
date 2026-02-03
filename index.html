@@ -28,18 +28,23 @@
 
     <!-- Header -->
     <header>
-        <nav class="container">
-            <a href="#" class="logo">TwojaStronaWWW</a>
+        <nav class="nav-inner">
+            <div class="nav-container">
+                <div class="nav-left">
+                    <a href="#" class="logo">TwojaStronaWWW</a>
+                </div>
 
-            <!-- Mobile Menu Toggle (Placeholder) -->
-            <button class="nav-toggle" aria-label="Menu" onclick="console.log('Toggle menu placeholder')">☰</button>
+                <div class="nav-right">
+                    <!-- Mobile Menu Toggle -->
+                    <button class="nav-toggle" aria-label="Menu"
+                        onclick="console.log('Toggle menu placeholder')">☰</button>
 
-            <div class="nav-links">
-                <a href="#portfolio">Realizacje</a>
-
-                <a href="#pricing">Cennik</a>
-                <a href="#contact">Kontakt</a>
-
+                    <div class="nav-links">
+                        <a href="#portfolio">Realizacje</a>
+                        <a href="#pricing">Cennik</a>
+                        <a href="#contact" class="btn btn-secondary btn-sm">Zapytaj o wycenę</a>
+                    </div>
+                </div>
             </div>
         </nav>
     </header>
@@ -96,7 +101,7 @@
 
 
     <!-- Portfolio Section -->
-    <section id="portfolio" class="features" style="background-color: rgba(0,0,0,0.2);">
+    <section id="portfolio" class="features bg-glass-darker">
         <div class="container">
             <h2 class="section-title">Lokalne realizacje i automatyzacje</h2>
             <div class="features-grid">
@@ -144,15 +149,14 @@
 
             </div>
 
-            <div
-                style="border-top: 1px solid var(--glass-border); margin-top: 80px; padding-top: 60px; text-align: center;">
-                <h2 style="font-size: 2rem; margin-bottom: 20px;">Zobaczmy, co da się zautomatyzować u Ciebie</h2>
-                <p style="font-size: 1.25rem; max-width: 800px; margin: 0 auto; color: var(--text-muted);">
-                    Każda firma ma procesy robione ręcznie. <strong style="color: var(--primary-color);">Sprawdźmy,
+            <div class="section-cta">
+                <h2>Zobaczmy, co da się zautomatyzować u Ciebie</h2>
+                <p>
+                    Każda firma ma procesy robione ręcznie. <strong>Sprawdźmy,
                         gdzie
                         automatyzacja może oszczędzić Ci czas i pieniądze.</strong>
                 </p>
-                <div style="margin-top: 40px;">
+                <div class="btn-container">
                     <a href="#contact" class="btn btn-primary">Zapytaj o wycenę</a>
                 </div>
             </div>
@@ -213,14 +217,12 @@
                 </div>
 
             </div>
-            <p
-                style="text-align: center; font-size: 0.9rem; color: var(--text-muted); margin-top: 30px; max-width: 800px; margin-left: auto; margin-right: auto;">
+            <p class="pricing-note">
                 Pakiety obejmują bazę projektu. Automatyzacje, integracje i niestandardowe procesy wyceniam
                 indywidualnie po krótkiej analizie potrzeb.
             </p>
 
-            <div
-                style="text-align: center; margin-top: 40px; border-top: 1px solid var(--glass-border); padding-top: 30px;">
+            <div class="pricing-footer">
                 <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Opieka i automatyzacje cykliczne</h3>
                 <p style="font-size: 0.95rem; color: var(--text-muted); max-width: 800px; margin: 0 auto;">
                     Po wdrożeniu projektu oferuję opcjonalną obsługę abonamentową:<br>
@@ -236,8 +238,8 @@
     <section id="contact" class="features">
         <div class="container">
             <h2 class="section-title">Zobaczmy, co da się zautomatyzować u Ciebie</h2>
-            <div class="contact-wrapper" style="max-width: 600px; margin: 0 auto 60px;">
-                <form id="contactForm" class="contact-form" style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="contact-wrapper">
+                <form id="contactForm" class="contact-form">
                     <!-- Honeypot for bots -->
                     <input type="text" name="website_url" style="display:none !important;" tabindex="-1"
                         autocomplete="off">
@@ -246,19 +248,12 @@
                         style="display: none; color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2); text-align: center;">
                     </div>
 
-                    <input type="text" name="name" placeholder="Imię i nazwisko"
-                        style="padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; font-family: var(--font-main);"
-                        required>
-                    <input type="email" name="email" placeholder="Adres Email"
-                        style="padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; font-family: var(--font-main);"
-                        required>
+                    <input type="text" name="name" placeholder="Imię i nazwisko" required>
+                    <input type="email" name="email" placeholder="Adres Email" required>
 
                     <textarea name="message" placeholder="Opisz krótko projekt lub proces, który chcesz zautomatyzować"
-                        rows="5"
-                        style="padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; font-family: var(--font-main);"
-                        required></textarea>
-                    <input type="tel" name="phone" placeholder="Telefon (opcjonalnie)"
-                        style="padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; font-family: var(--font-main);">
+                        rows="5" required></textarea>
+                    <input type="tel" name="phone" placeholder="Telefon (opcjonalnie)">
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Wyślij zapytanie</button>
                     <p id="formSuccess" style="display: none; color: #27c93f; text-align: center; margin-top: 10px;">
                         Wiadomość wysłana pomyślnie!</p>
@@ -270,9 +265,9 @@
         </div>
     </section>
 
-    <!-- Sticky Call Butto;n -->
-    <a href="tel:535050460" class="sticky-call-btn" title="Zadzwoń po wstępnych ustaleniach">
-        📞
+    <!-- Sticky Call Button -->
+    <a href="#contact" class="sticky-call-btn" title="Szybki kontakt">
+        ✉️
     </a>
 
 
