@@ -71,6 +71,13 @@ function initContactForm() {
         });
     });
 
+    // Lead Recovery on tab close / page hide
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            sendDraft();
+        }
+    });
+
     // Form Submission
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
