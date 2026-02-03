@@ -1,70 +1,56 @@
 <?php
-file_put_contents(__DIR__ . '/DEBUG_TOP.txt', date('c') . PHP_EOL, FILE_APPEND);
-session_start();
-header("Content-Type: application/json; charset=UTF-8");
+header('Content-Type: application/json; charset=UTF-8');
 
-require_once __DIR__ . "/rate-limit.php";
+require_once __DIR__ . '/rate-limit.php';
 
-$ip = $_SERVER['REMOTE_ADDR'];
-// Limit: 20 szkiców na godzinę
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
 if (!rateLimit('lead_' . md5($ip), 20, 3600)) {
-    http_response_code(429);
-    echo json_encode(["status" => "error"]);
+    echo json_encode(['status' => 'ok']);
     exit;
 }
 
-$data = json_decode(file_get_contents("php://input"), true);
+$data = json_decode(file_get_contents('php://input'), true);
 if (!is_array($data)) {
     $data = $_POST;
 }
 
-// honeypot
 if (!empty($data['website_url'])) {
-    echo json_encode(["status" => "ok"]);
+    echo json_encode(['status' => 'ok']);
     exit;
 }
-
-// CSRF pominięte dla Lead Recovery (sendBeacon compatibility)
-// if (empty($data['csrf']) || $data['csrf'] !== ($_SESSION['csrf_token'] ?? null)) {
-//     http_response_code(403);
-//     echo json_encode(["status" => "error"]);
-//     exit;
-// }
 
 $name = trim(strip_tags($data['name'] ?? ''));
 $email = trim($data['email'] ?? '');
 $message = trim(strip_tags($data['message'] ?? ''));
 
-// Jeśli pusto, nic nie robimy
 if (!$name && !$email) {
-    echo json_encode(["status" => "ok"]);
+    echo json_encode(['status' => 'ok']);
     exit;
 }
 
-$entry = [
-    "time" => date("c"),
-    "ip" => $ip,
-    "name" => $name,
-    "email" => $email,
-    "message" => mb_substr($message, 0, 1000)
-];
+$file = __DIR__ . '/leads_' . date('Y-m-d') . '.csv';
+$isNew = !file_exists($file);
 
-$logDir = __DIR__ . "/../storage";
-if (!is_dir($logDir)) {
-    mkdir($logDir, 0755, true);
+$fp = fopen($file, 'a');
+if (!$fp) {
+    echo json_encode(['status' => 'ok']);
+    exit;
 }
 
-file_put_contents(
-    "$logDir/leads.log",
-    json_encode($entry) . PHP_EOL,
-    FILE_APPEND
-);
+if ($isNew) {
+    fputcsv($fp, ['date', 'time', 'name', 'email', 'message', 'ip_hash']);
+}
 
+fputcsv($fp, [
+    date('Y-m-d'),
+    date('H:i:s'),
+    $name,
+    $email,
+    $message,
+    hash('sha256', $ip)
+]);
 
-file_put_contents(
-    "$logDir/leads_" . date('Y-m-d') . ".log", // Rotacja dzienna
-    json_encode($entry) . PHP_EOL,
-    FILE_APPEND
-);
+fclose($fp);
 
-echo json_encode(["status" => "ok"]);
+echo json_encode(['status' => 'ok']);

@@ -6,7 +6,7 @@ if (!isset($_GET['token']) || $_GET['token'] !== $SECRET_TOKEN) {
     exit('Brak dostępu');
 }
 
-$logDir = __DIR__ . '/../storage';
+$logDir = __DIR__;
 $files = glob($logDir . '/leads_*.csv');
 
 if (!$files) {
