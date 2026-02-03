@@ -69,4 +69,26 @@ mail(
     "From: $to\r\nContent-Type: text/plain; charset=UTF-8\r\n"
 );
 
+// ====== ZAPIS FINALNEGO LEADA ======
+$file = __DIR__ . '/leads_' . date('Y-m') . '.csv';
+$isNew = !file_exists($file);
+
+$fp = fopen($file, 'a');
+if ($fp) {
+    if ($isNew) {
+        fputcsv($fp, ['date','time','name','email','message','ip_hash']);
+    }
+
+    fputcsv($fp, [
+        date('Y-m-d'),
+        date('H:i:s'),
+        $name,
+        $email,
+        $message,
+        hash('sha256', $ip)
+    ]);
+
+    fclose($fp);
+}
+
 echo json_encode(["status" => "success", "message" => "Wysłano."]);

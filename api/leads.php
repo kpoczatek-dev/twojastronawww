@@ -24,6 +24,11 @@ rsort($files); // Najnowsze pliki pierwsze
 
 $leads = [];
 foreach ($files as $file) {
+    // Ignorujemy pliki draftów (zawierające _draft_)
+    if (strpos(basename($file), '_draft_') !== false) {
+        continue;
+    }
+
     if (($handle = fopen($file, "r")) !== FALSE) {
         // Pomijamy nagłówek
         $header = fgetcsv($handle);

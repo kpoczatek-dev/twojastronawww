@@ -22,6 +22,11 @@ $out = fopen('php://output', 'w');
 fputcsv($out, ['date', 'time', 'name', 'email', 'message', 'ip_hash']);
 
 foreach ($files as $file) {
+    // Ignorujemy pliki draftów
+    if (strpos(basename($file), '_draft_') !== false) {
+        continue;
+    }
+
     if (($handle = fopen($file, "r")) !== FALSE) {
         $header = fgetcsv($handle); // Pomijamy nagłówek z pojedynczego pliku
         while (($data = fgetcsv($handle)) !== FALSE) {
